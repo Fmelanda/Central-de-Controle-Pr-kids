@@ -5,8 +5,6 @@ services:
       dockerfile: Dockerfile
     container_name: central_controle
     restart: unless-stopped
-    env_file:
-      - .env
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
@@ -14,6 +12,18 @@ services:
       APP_URL: ${APP_URL:-http://localhost:3001}
       TRUST_PROXY: ${TRUST_PROXY:-false}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      DASHBOARD_USER: ${DASHBOARD_USER:-admin}
+      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD:?configure DASHBOARD_PASSWORD}
+      SESSION_SECRET: ${SESSION_SECRET:?configure SESSION_SECRET}
+      INTEGRATION_KEY: ${INTEGRATION_KEY:?configure INTEGRATION_KEY}
+      EVOLUTION_API_KEY: ${EVOLUTION_API_KEY:?configure EVOLUTION_API_KEY}
+      EVOLUTION_DEFAULT_INSTANCE: ${EVOLUTION_DEFAULT_INSTANCE:?configure EVOLUTION_DEFAULT_INSTANCE}
+      MAX_BODY_BYTES: ${MAX_BODY_BYTES:-15728640}
+      MAX_MEDIA_BYTES: ${MAX_MEDIA_BYTES:-8388608}
+      MAX_TEXT_LENGTH: ${MAX_TEXT_LENGTH:-4000}
+      LOGIN_RATE_LIMIT: ${LOGIN_RATE_LIMIT:-10}
+      INTEGRATION_RATE_LIMIT: ${INTEGRATION_RATE_LIMIT:-600}
+      EVOLUTION_TIMEOUT_MS: ${EVOLUTION_TIMEOUT_MS:-15000}
       # Dentro do Docker, localhost seria este próprio container.
       EVOLUTION_API_URL: ${EVOLUTION_API_URL_INTERNAL:-http://evolution_api:8080}
     ports:
