@@ -24,7 +24,7 @@ services:
       LOGIN_RATE_LIMIT: ${LOGIN_RATE_LIMIT:-10}
       INTEGRATION_RATE_LIMIT: ${INTEGRATION_RATE_LIMIT:-600}
       EVOLUTION_TIMEOUT_MS: ${EVOLUTION_TIMEOUT_MS:-15000}
-      # Dentro do Docker, localhost seria este próprio container.
+      # Dentro do Docker, localhost seria este proprio container.
       EVOLUTION_API_URL: ${EVOLUTION_API_URL_INTERNAL:-http://evolution_api:8080}
     ports:
       - "3001:3000"

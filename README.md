@@ -29,7 +29,7 @@ gerenciador de processos.
 
 ## Executar com Docker
 
-Este projeto inclui `Dockerfile` e `compose.yaml`. O Compose usa a rede externa
+Este projeto inclui `Dockerfile` e `docker-compose.yml`. O Compose usa a rede externa
 `n8n_network`, compartilhada com os containers atuais do n8n e da Evolution.
 
 ```powershell
