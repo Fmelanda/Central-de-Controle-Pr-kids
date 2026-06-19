@@ -1,0 +1,1068 @@
+{
+  "name": "Whatsap clinica + Central de Controle",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=Você é a Daniele, assistente da Clínica Pró-Kids, uma clínica médica especialista em pediatria.\nSua missão é: responder dúvidas de pacientes via WhatsApp.\nMantenha sempre um tom cordial, claro e profissional.\n\nBase de conhecimento da clínica Prókids:\n  \n  A. Especialidades da clínica\n    - Ortopedia Pediátrica: Essa especialidade médica é responsável pelo estudo e pelo tratamento das doenças, lesões e deformidades que atingem o aparelho locomotor, incluindo os ossos, músculos, tendões, articulações e ligamentos. A Ortopedia está relacionada também com outra especialidade, a Traumatologia, que trata das lesões provocadas por traumas como, por exemplo, as fraturas ósseas. No Instituto Pró-Kids a Ortopedia Pediátrica tem uma abrangência ainda maior, ao tratar as deformidades e auxiliar na programação da reabilitação das doenças neuromusculares como: paralisia cerebral, mielomeningocele, neuropatias, miopatias e outras.\n    - Neurocirurgia Pediátrica: Hidrocefalias, Endoscopia Cerebral, Craniossinostoses, Mielomeningoceles, Malformações do Sistema Nervoso, Tumores, Traumas, Tratamento Cirúrgico da Espasticidade.\n    - Cardiologia Pediátrica: Integra os conhecimentos voltados à área cardiológica e pediátrica, envolvendo o diagnóstico, prevenção e tratamento de disfunções ou problemas relacionados ao coração.\n    - Pediatria: A pediatria é a especialidade dedicada à saúde da criança e do adolescente. Atua no diagnóstico e tratamento das mais diversas doenças que comprometem a saúde do ser humano desde o nascimento até próximo à idade adulta. É a área da medicina indicada para orientar sobre aleitamento materno, imunização (vacinas), prevenção de acidentes e esclarecer a família sobre o crescimento e desenvolvimento saudável.\n\n  B. Informações dos Médicos\n    \n    Dr. Alessandro Melanda\n    Sobre: Referência nacional no tratamento de crianças com Paralisia Cerebral e deficiências no andar, com mais de 25 anos de experiência em Ortopedia Pediátrica e uma extensa formação internacional. Graduado em Medicina pela UNESP, especializou-se em Ortopedia Pediátrica com residência na AACD-SP e aperfeiçoou-se com um fellowship na Universidade da Califórnia, San Diego, nos Estados Unidos.\n    Convênios aceitos:\n    Observações:\n\n    Dr Alexandre Casagrande Canheu\n    Sobre: Dr. Alexandre Casagrande Canheu, fez especialização em Neurocirurgia pela Hospital das Clínicas da Faculdade de Medicina da USP de Ribeirão Preto, encerrada em 2005. Fez Fellowship em Neurocirurgia Pediátrica an UniversitatsMedizin Charitè de Berlim, Alemanha, em 2011, e esteve em vários estágios em serviços de excelência na Europa. É Membro Afiliado da European Society for Pediatric Neurosurgery, Membro da International Society for Pediatric Neurosurgery, International Fellow da American Society of Neurological Surgeons, ocupa o cargo de Conselheiro Deliberativo da Sociedade Brasileira de Neurocirurgia Pediátrica, e neste ano de 2019 foi Presidente do Consenso Brasileiro sobre Deformidade de Chiari I, realizado em Londrina nos dias 2 e 3 de agosto.\n    Convênios aceitos:\n    Observações:\n\n    Dr. Akira Motomatsu Jr - Indisponível\n    Sobre: Médico pediatra geral. Saiu da clínica Prókids recentemente, porém pacientes desinformados ainda perguntam sobre ele.\n    Convênios aceitos:\n    Observações: Para qualquer duvida sobre o doutor, o paciente deve entrar em contato com ele. Atualmente ele está atendendo pacientes na clínica: Neonato; Endereço: Rua Souza Naves 1044 sala 201, Londrina Pr; Telefone: (43)3020-3305.\n    \n    Dr. João Paulo Monteiro\n    Sobre: Médico do setor de urgência do Hospital Universitário de Londrina (UEL) e professor da instituição. Atua na área de ortopedia e traumatologia pediátrica. O Dr. João Paulo tem vasta experiência na manejo de pacientes que necessitem uso de fixadores externos para tratamento de afecções ortopédicas.\n    Convênios aceitos:\n    Observações:\n\n    Dra. Cristiane Ikeda\n    Sobre: Chefe da UTI do Hospital do Coração Unidade Bela Suiça e Ex. Chefe da UTI do Hospital Infantil de Londrina. Realiza a avaliação dos pacientes cardiológicos do Instituto Pró-Kids, Hospital Coração Bela Suiça e Hospital Infantil, realizando exames de alta complexidade como o ecocardiograma. A Dra Cristiane Ikeda é referência na cardiologia pediátrica com larga experiência na condução de casos complexos.\n    Convênios aceitos:\n    Observações:\n\n  C. Endereço da clínica Pró-Kids: Avenida Adhemar Pereira de Barros, 1199, Londrina – CEP 86047-250.\n\n  D. Horário de atendimento: segunda a sexta das 08h30 às 18h30\n\n  E. Informações gerais\n    - Data atual: {{ $now }}\n    - Numero de telefone do paciente: {{ $('Dados').item.json.numero }}\n\nFluxo de Atendimento:\n\n1. Saudação inicial\n“Olá, sou a Daniele, assistente da Clínica Pró-Kids. Como posso ajudar você hoje?”\n\n2. Identificação do motivo do contato:\n  Importante - Uma pergunta por vez!\n  Caso 1 - Dúvida relacionada à clínica: Use seu conhecimento sobre a clínica para responder.\n  Caso 2 - Dúvida relacionada a um médico: Use seu conhecimento sobre os médicos para responder.\n  Caso 3 - Marcar uma consulta: 1. Pergunte o motivo/condição médica para o paciente querer agendar uma consulta. 2. Pergunte o médico com o qual o paciente gostaria de marcar uma consulta. Caso o paciente não saiba o médico mais apropriado para sua condição ou queira marcar uma consulta com um médico não apropriado para sua condição, use sua base de conhecimento sobre os médicos para recomendar o médico mais apropriado. 3. Peça e colete os dias e horários de preferência do paciente para a consulta. 4. Peça e colete o nome e idade do paciente. 5. Monte um json \"consulta\" contendo: Numero de telefone do paciente; Nome; Idade; Motivo da consulta; Médico responsável pela consulta; Dias e horários preferidos pelo paciente para a consulta. 6. Adicione o json \"consulta\" em sua resposta, e no campo \"resposta\": \"Pronto! Logo mais entraremos em contato para terminar o agendamento da consulta. Obrigada, tenha um ótimo dia.\"\n\n3. Resposta\n  - Estrutura da resposta: Sua resposta deve ser SOMENTE um JSON válido.\n\nNão use Markdown.\nNão use ```json.\nNão use crases.\nNão escreva explicações fora do JSON.\n\nFormato obrigatório:\n\n{\n  \"resposta\": \"mensagem que será enviada ao paciente\",\n  \"handoff\": \"false\" ou \"true\",\n  \"handoff_motivo\": \"null\" ou \"motivo\",\n  \"consulta\": null\n}\n\nQuando todos os dados necessários para agendar uma consulta forem obtidos, use:\n\n{\n  \"resposta\": \"Pronto! Logo mais entraremos em contato para terminar o agendamento da consulta. Obrigada, tenha um ótimo dia.\",\n  \"handoff\": false,\n  \"handoff_motivo\": null,\n  \"consulta\": {\n    \"nome\": \"nome do paciente\",\n    \"idade\": \"idade do paciente\",\n    \"telefone\": \"telefone do paciente\",\n    \"motivo\": \"motivo da consulta\",\n    \"data\": \"Dias e horários preferidos pelo paciente para a consulta\",\n    \"medico\": \"médico ou especialidade\",\n  }\n}\n\nSe ainda não houver consulta marcada, mantenha \"consulta\": null.\n\nQuando precisar de atendimento humano:\n{\n  \"resposta\": \"Aguarde só um momento, vou chamar um funcionário para ajudar você.\",\n  \"consulta\": null,\n  \"handoff\": true,\n  \"handoff_motivo\": \"motivo do porque uma pessoa precisa assumir\"\n}\n\n  - Tom: Empático, profissional e simples.\n  - Objetividade: Responda sempre de forma clara, direta e resumida.\n  - Erros e exceções: Caso a duvida do paciente fuja de sua base de conhecimento ou você não tenha certeza da resposta, chame o atendimento humano.\n*IMPORTANTE: NÃO TENTE RESPONDER SE NÃO TIVER CERTEZA, NÃO INVENTE INFORMAÇÕES*"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        2832,
+        1344
+      ],
+      "id": "65dc1884-caa4-4ae0-8886-5dda90ffc115",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-flash-lite-latest",
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2784,
+        1536
+      ],
+      "id": "727ec50e-9dc0-4160-a6e8-016990349635",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "W9gxHOTxKFNI4cRq",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Dados').item.json.numero }}",
+        "sessionTTL": 600,
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        2928,
+        1568
+      ],
+      "id": "c198dac3-698c-4265-a7cf-7f972363f978",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "28YUoMBTJQ7upcxm",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Dados').item.json.instancia }}",
+        "remoteJid": "={{ $('Dados').item.json.numero }}",
+        "messageText": "={{ $('Code in JavaScript').item.json.resposta }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        4064,
+        1344
+      ],
+      "id": "a43f58bb-1ad6-4b47-a924-373644442096",
+      "name": "Enviar texto",
+      "credentials": {
+        "evolutionApi": {
+          "id": "edjnldQOwCuc9a3R",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "=buffer: {{ $('Dados').item.json.numero }}",
+        "messageData": "={{ $('Dados').item.json['mensagem '] }}",
+        "tail": true
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        1264
+      ],
+      "id": "98925fa1-9ff1-4576-b890-49d17d9fb2c8",
+      "name": "push",
+      "credentials": {
+        "redis": {
+          "id": "28YUoMBTJQ7upcxm",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": "=10"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2272,
+        1264
+      ],
+      "id": "fab9548e-effc-403f-a25b-936f24f18a1d",
+      "name": "Wait",
+      "webhookId": "43aa8e0d-8bb5-48d9-b869-620cb9651025"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "msgs",
+        "key": "=buffer: {{ $('Dados').item.json.numero }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2496,
+        1264
+      ],
+      "id": "e8b03f5a-249d-4c75-899b-f93f84c24943",
+      "name": "msgs",
+      "credentials": {
+        "redis": {
+          "id": "28YUoMBTJQ7upcxm",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "42afc77a-7ce3-48c1-bccf-e26a7b291ad8",
+              "leftValue": "={{ $json.msgs.last() }}",
+              "rightValue": "={{ $('Dados').item.json['mensagem '] }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2064,
+        1504
+      ],
+      "id": "34d3bd0b-da63-4287-a05e-be0974a7c0a6",
+      "name": "filterBuffer"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=buffer: {{ $('Dados').item.json.numero }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2272,
+        1504
+      ],
+      "id": "b12fcb2a-691b-4d21-a6e3-19e0ecf515d8",
+      "name": "deleteBuffer",
+      "credentials": {
+        "redis": {
+          "id": "28YUoMBTJQ7upcxm",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6e3bdb73-4771-4318-9ebd-73085f56ae4e",
+              "name": "text",
+              "value": "={{ $('filterBuffer').item.json.msgs.join('\\n') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": "={{ false }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2496,
+        1504
+      ],
+      "id": "0c4a2164-6528-45b9-89bd-404b1e1eaf5a",
+      "name": "junta_msgs"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c690ee99-be1f-4027-a71b-51ab79f89339",
+              "leftValue": "={{ $json.consulta }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3776,
+        1360
+      ],
+      "id": "6827f5a9-19ff-4610-92da-a2a03f42b5bb",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let raw = $json.output;\n\n// Se por algum motivo já vier como objeto, apenas retorna\nif (typeof raw !== 'string') {\n  return {\n    json: raw\n  };\n}\n\n// Remove ```json e ```\nraw = raw\n  .replace(/^```json\\s*/i, '')\n  .replace(/^```\\s*/i, '')\n  .replace(/\\s*```$/i, '')\n  .trim();\n\nconst parsed = JSON.parse(raw);\n\nreturn {\n  json: parsed\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3232,
+        1344
+      ],
+      "id": "e5c7196d-9aff-4500-bb7d-82fa25ca4398",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'http://central_controle:3000/api/integrations/conversations/' + encodeURIComponent($('Dados').item.json.numero) + '/control' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-integration-key",
+              "value": "=SUBSTITUA_PELA_INTEGRATION_KEY_DA_CENTRAL"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1600,
+        1280
+      ],
+      "id": "4883d649-bafb-4d01-b465-8db33fc9e033",
+      "name": "Central - Consultar controle",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f52ac0f9-3319-496e-a9c4-98f140eb9538",
+              "leftValue": "={{ $json.mode }}",
+              "rightValue": "ai",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1776,
+        1280
+      ],
+      "id": "fda3d454-8ab5-4285-a0ce-3eeb3b388ad6",
+      "name": "Central - IA ativa?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e85ff0d2-c193-4486-abb4-aa10a2362253",
+              "leftValue": "={{ $json.handoff }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3488,
+        1344
+      ],
+      "id": "156f95ce-1f30-4797-8fea-0e8a2d292af2",
+      "name": "Central - Solicita humano?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://central_controle:3000/api/integrations/handoff",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-integration-key",
+              "value": "=SUBSTITUA_PELA_INTEGRATION_KEY_DA_CENTRAL"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ phone: $('Dados').item.json.numero, name: $('Dados').item.json['nome da pessoa'], instance: $('Dados').item.json.instancia, reason: $('Code in JavaScript').item.json.handoff_motivo || 'Atendimento humano solicitado' }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3616,
+        1184
+      ],
+      "id": "88deaa31-c3d1-4402-8822-a68261622f9a",
+      "name": "Central - Abrir chamado humano",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://central_controle:3000/api/integrations/appointments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-integration-key",
+              "value": "=SUBSTITUA_PELA_INTEGRATION_KEY_DA_CENTRAL"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ consulta: $('Code in JavaScript').item.json.consulta, instance: $('Dados').item.json.instancia }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3920,
+        1568
+      ],
+      "id": "916a3a1b-0b78-4110-8225-51d06e75feba",
+      "name": "Central - Registrar consulta",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://central_controle:3000/api/integrations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-integration-key",
+              "value": "=SUBSTITUA_PELA_INTEGRATION_KEY_DA_CENTRAL"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ phone: $('Dados').item.json.numero, name: $('Dados').item.json['nome da pessoa'], instance: $('Dados').item.json.instancia, direction: 'outbound', senderType: 'ai', text: $('Code in JavaScript').item.json.resposta }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4304,
+        1344
+      ],
+      "id": "7613be1d-219e-4a6d-bc8a-8b5f05b09a1b",
+      "name": "Central - Registrar resposta IA",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mensagem",
+        "options": {
+          "binaryPropertyName": "audio_file"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        144,
+        1280
+      ],
+      "id": "e39b2057-d27a-4976-b237-1888b1c2995f",
+      "name": "Webhook EVO",
+      "webhookId": "9f4f41ab-fc98-427f-ab55-5bcf092d9c51"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://central_controle:3000/api/integrations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-integration-key",
+              "value": "=SUBSTITUA_PELA_INTEGRATION_KEY_DA_CENTRAL"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ (() => {\n  const dados = $('Dados').item.json;\n  const isAudio = dados['tipo da mensagem'] === 'audioMessage';\n  const payload = {\n    phone: dados.numero,\n    name: dados['nome da pessoa'],\n    instance: dados.instancia,\n    direction: 'inbound',\n    senderType: 'patient',\n    contentType: isAudio ? 'audio' : 'text',\n    text: dados['mensagem '] || (isAudio ? '[Áudio]' : ''),\n    externalId: dados['id da mensagem'],\n  };\n\n  if (isAudio) {\n    payload.audio = {\n      base64: dados['audio base64'],\n      mimeType: dados['audio mime'] || 'audio/ogg',\n      filename: dados['audio filename'],\n    };\n  }\n\n  return JSON.stringify(payload);\n})() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1328,
+        1280
+      ],
+      "id": "5ec3f366-a051-4468-b797-96f21e320032",
+      "name": "Central - Registrar recebida",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "52aaf749-fe4f-44e4-880e-15b2bfc027f1",
+                    "leftValue": "={{ $('Webhook EVO').item.json.body.data.messageType }}",
+                    "rightValue": "extendedTextMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "e514e613-fd6a-48bd-b0ae-bae2448c810e",
+                    "leftValue": "={{ $('Webhook EVO').item.json.body.data.messageType }}",
+                    "rightValue": "conversation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Webhook EVO').item.json.body.data.messageType }}",
+                    "rightValue": "audioMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "937855b4-4ef3-462e-b270-4c2ddc7fd335",
+      "name": "Switch1",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        368,
+        1264
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data",
+        "binaryPropertyName": "audio_file",
+        "options": {
+          "fileName": "file.ogg",
+          "mimeType": "application/ogg"
+        }
+      },
+      "id": "19ee818b-e9e1-4a4a-a793-bf97a94caf3d",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3c5ccbc9-69d1-4b13-a7c3-e6945bc8c655",
+              "name": "data",
+              "value": "={{ $('Webhook EVO').item.json.body.data.message.base64 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f17fdc40-fd24-4082-8637-12573cd0fd28",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "68f2163b-37a2-49e6-93d2-1fabb50305d0",
+              "name": "text",
+              "value": "={{ $('Webhook EVO').item.json.body.data.message.conversation || $('Webhook EVO').item.json.body.data.message.extendedTextMessage?.text || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        608,
+        1280
+      ],
+      "id": "02574693-f058-4b4f-baca-515252c27ef5",
+      "name": "text"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3bb769dd-fe99-4157-9c8f-8f3a5a2e10e4",
+              "name": "numero",
+              "value": "={{ $('Webhook EVO').item.json.body.data.key.senderPn || $('Webhook EVO').item.json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "499e4238-87c8-4eac-b6a4-f7467be74c8d",
+              "name": "instancia",
+              "value": "={{ $('Webhook EVO').item.json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "25fffbd2-072d-413b-bd3d-740e6e776124",
+              "name": "mensagem ",
+              "value": "={{ $json.text || $json.data }}",
+              "type": "string"
+            },
+            {
+              "id": "117dcb14-3994-45c3-b850-707746f192e0",
+              "name": "id da mensagem",
+              "value": "={{ $('Webhook EVO').item.json.body.data.key.id }}",
+              "type": "string"
+            },
+            {
+              "id": "7004b57d-9d79-4915-82af-d1ceda291d9e",
+              "name": "nome da pessoa",
+              "value": "={{ $('Webhook EVO').item.json.body.data.pushName }}",
+              "type": "string"
+            },
+            {
+              "id": "9fc49d08-25e1-4b58-aa25-237a5d27e871",
+              "name": "tipo da mensagem",
+              "value": "={{ $('Webhook EVO').item.json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "859c38af-e853-47c1-8c05-928f7f2a50d0",
+              "name": "audio base64",
+              "value": "={{ $('Webhook EVO').item.json.body.data.message.base64 || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "abdf84d3-eefb-47c0-9729-b2ca7452a6aa",
+              "name": "audio mime",
+              "value": "={{ $('Webhook EVO').item.json.body.data.message.audioMessage?.mimetype || 'audio/ogg' }}",
+              "type": "string"
+            },
+            {
+              "id": "cae87733-a714-49d5-a180-4bd5362c1f82",
+              "name": "audio filename",
+              "value": "={{ $('Webhook EVO').item.json.body.data.key.id + '.ogg' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        1280
+      ],
+      "id": "749fc9a5-1b8e-4d3f-9fb8-666298711335",
+      "name": "Dados"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://whisper-asr:9000/asr",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "audio_file",
+              "inputDataFieldName": "audio_file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        848,
+        1440
+      ],
+      "id": "8357b715-080f-4608-b36c-830453c303ae",
+      "name": "transcription"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "push": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "msgs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "msgs": {
+      "main": [
+        [
+          {
+            "node": "filterBuffer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filterBuffer": {
+      "main": [
+        [
+          {
+            "node": "deleteBuffer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deleteBuffer": {
+      "main": [
+        [
+          {
+            "node": "junta_msgs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "junta_msgs": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto": {
+      "main": [
+        [
+          {
+            "node": "Central - Registrar resposta IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Central - Solicita humano?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Central - Registrar consulta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Central - Consultar controle": {
+      "main": [
+        [
+          {
+            "node": "Central - IA ativa?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Central - IA ativa?": {
+      "main": [
+        [
+          {
+            "node": "push",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Central - Solicita humano?": {
+      "main": [
+        [
+          {
+            "node": "Central - Abrir chamado humano",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Central - Abrir chamado humano": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Central - Registrar consulta": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook EVO": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "transcription",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "text": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados": {
+      "main": [
+        [
+          {
+            "node": "Central - Registrar recebida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Central - Registrar recebida": {
+      "main": [
+        [
+          {
+            "node": "Central - Consultar controle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "transcription": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "64c5799e-f574-4f8f-8077-b04dfd2bd32b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "43115683930834c9821c33451b75815b597676bb5f52519c4b254ee77f3564ac"
+  },
+  "id": "zX3aoCZKUP9Ly5mN",
+  "tags": []
+}

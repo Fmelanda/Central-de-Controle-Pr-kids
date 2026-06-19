@@ -1,0 +1,14 @@
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+data
+n8n
+node_modules
+README.md
+*.log
+coverage
+.cache
+.DS_Store
+Thumbs.db

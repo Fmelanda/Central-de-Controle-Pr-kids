@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Pró-Kids</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div id="login" class="login-shell hidden">
+      <form id="login-form" class="login-card">
+        <img class="brand-mark" src="/pro-kids-logo.png" alt="Logo Pró-Kids">
+        <p class="eyebrow">CLÍNICA PRÓ-KIDS</p>
+        <h1>Central de atendimento</h1>
+        <p class="muted">Entre para acompanhar pacientes, conversas e consultas.</p>
+        <label>Usuário<input name="user" value="admin" autocomplete="username" required></label>
+        <label>Senha<input name="password" type="password" autocomplete="current-password" required></label>
+        <button class="button primary" type="submit">Entrar</button>
+        <p id="login-error" class="error"></p>
+      </form>
+    </div>
+
+    <div id="app" class="app hidden">
+      <aside class="sidebar">
+        <div class="brand">
+          <img class="brand-mark" src="/pro-kids-logo.png" alt="Logo Pró-Kids">
+          <div><strong>Pró-Kids</strong><span>Central de atendimento</span></div>
+        </div>
+        <nav>
+          <button class="nav-item active" data-view="conversations">
+            <span class="nav-icon">◎</span> Conversas <b id="nav-unread">0</b>
+          </button>
+          <button class="nav-item" data-view="appointments">
+            <span class="nav-icon">□</span> Consultas <b id="nav-appointments">0</b>
+          </button>
+          <button class="nav-item" data-view="notifications">
+            <span class="nav-icon">◇</span> Notificações <b id="nav-notifications">0</b>
+          </button>
+        </nav>
+        <div class="sidebar-foot">
+          <span class="online-dot"></span>
+          <div><strong>Sistema online</strong><small>n8n + Evolution API</small><small>Criado por Felipe Melanda</small></div>
+        </div>
+      </aside>
+
+      <main>
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">VISÃO GERAL</p>
+            <h1 id="page-title">Conversas</h1>
+          </div>
+          <div class="top-actions">
+            <span id="clock"></span>
+            <button class="icon-button" data-view="notifications" title="Notificações">◇</button>
+            <div class="avatar">PK</div>
+          </div>
+        </header>
+
+        <section id="conversations-view" class="view">
+          <div class="stats" id="stats"></div>
+          <div class="inbox">
+            <aside class="conversation-panel">
+              <div class="panel-tools">
+                <div class="search"><span>⌕</span><input id="search" placeholder="Buscar paciente ou telefone"></div>
+                <div class="filters">
+                  <button class="filter active" data-mode="">Todas</button>
+                  <button class="filter" data-mode="human">Humano</button>
+                  <button class="filter" data-mode="ai">IA</button>
+                </div>
+              </div>
+              <div id="conversation-list" class="conversation-list"></div>
+            </aside>
+            <section id="chat" class="chat empty-state">
+              <div class="empty-illustration">•••</div>
+              <h2>Selecione uma conversa</h2>
+              <p>Escolha um paciente ao lado para visualizar o histórico e assumir o atendimento.</p>
+            </section>
+          </div>
+        </section>
+
+        <section id="appointments-view" class="view hidden">
+          <div class="section-heading">
+            <div><h2>Solicitações de consulta</h2><p>Dados coletados automaticamente pelo agente.</p></div>
+            <div class="search compact"><span>⌕</span><input id="appointment-search" placeholder="Buscar consulta"></div>
+          </div>
+          <div id="appointment-list" class="appointment-grid"></div>
+        </section>
+
+        <section id="notifications-view" class="view hidden">
+          <div class="section-heading">
+            <div><h2>Notificações</h2><p>Chamados humanos e novas solicitações.</p></div>
+            <button id="mark-read" class="button secondary">Marcar todas como lidas</button>
+          </div>
+          <div id="notification-list" class="notification-list"></div>
+        </section>
+      </main>
+    </div>
+    <div id="toast" class="toast"></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
