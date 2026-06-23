@@ -101,6 +101,14 @@ async function enableDesktopNotifications() {
   await Notification.requestPermission();
 }
 
+function renderEmptyChat() {
+  $("#chat").className = "chat empty-state";
+  $("#chat").innerHTML = `
+    <div class="empty-illustration">•••</div>
+    <h2>Selecione uma conversa</h2>
+    <p>Escolha um paciente ao lado para visualizar o histórico e assumir o atendimento.</p>`;
+}
+
 async function loadSummary() {
   const summary = await api("/api/summary");
   $("#nav-unread").textContent = summary.unread;
@@ -138,6 +146,9 @@ async function loadConversations(keepChat = true) {
   $$(".conversation-item").forEach((button) => button.addEventListener("click", () => openChat(Number(button.dataset.id))));
   if (keepChat && state.selectedId && state.conversations.some((item) => item.id === state.selectedId)) {
     await openChat(state.selectedId, false);
+  } else if (keepChat && state.selectedId) {
+    state.selectedId = null;
+    renderEmptyChat();
   }
 }
 
@@ -267,6 +278,46 @@ async function loadNotifications() {
     </article>`).join("") : `<div class="empty-list">Nenhuma notificação.</div>`;
 }
 
+async function clearData(type, button) {
+  const actions = {
+    conversations: {
+      endpoint: "/api/conversations",
+      confirm: "Limpar todas as conversas e mensagens?",
+      success: "Conversas removidas",
+    },
+    appointments: {
+      endpoint: "/api/appointments",
+      confirm: "Limpar todos os cards de consulta?",
+      success: "Consultas removidas",
+    },
+    notifications: {
+      endpoint: "/api/notifications",
+      confirm: "Limpar todas as notificações?",
+      success: "Notificações removidas",
+    },
+  };
+  const action = actions[type];
+  if (!action || !confirm(action.confirm)) return;
+
+  const label = button.textContent;
+  button.disabled = true;
+  button.textContent = "Limpando...";
+  try {
+    await api(action.endpoint, { method: "DELETE" });
+    if (type === "conversations") {
+      state.selectedId = null;
+      renderEmptyChat();
+    }
+    toast(action.success);
+    await refresh();
+  } catch (error) {
+    toast(error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = label;
+  }
+}
+
 async function refresh() {
   await Promise.all([loadSummary(), loadConversations(), loadAppointments(), loadNotifications()]);
 }
@@ -275,7 +326,12 @@ function switchView(view) {
   $$(".view").forEach((node) => node.classList.add("hidden"));
   $(`#${view}-view`).classList.remove("hidden");
   $$(".nav-item").forEach((item) => item.classList.toggle("active", item.dataset.view === view));
-  $("#page-title").textContent = { conversations: "Conversas", appointments: "Consultas", notifications: "Notificações" }[view];
+  $("#page-title").textContent = {
+    conversations: "Conversas",
+    appointments: "Consultas",
+    notifications: "Notificações",
+    settings: "Configurações",
+  }[view];
   if (view === "appointments") loadAppointments();
   if (view === "notifications") {
     loadNotifications();
@@ -331,6 +387,9 @@ $("#appointment-search").addEventListener("input", renderAppointments);
 $("#mark-read").addEventListener("click", async () => {
   await api("/api/notifications/read", { method: "POST", body: "{}" });
   await Promise.all([loadNotifications(), loadSummary()]);
+});
+$$("[data-clear]").forEach((button) => {
+  button.addEventListener("click", () => clearData(button.dataset.clear, button));
 });
 setInterval(() => {
   $("#clock").textContent = new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(new Date());

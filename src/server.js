@@ -710,6 +710,25 @@ async function handleApi(req, res, url) {
     });
   }
 
+  if (req.method === "DELETE" && pathname === "/api/conversations") {
+    const result = db.prepare("DELETE FROM conversations").run();
+    emit("messages", {});
+    emit("notifications", {});
+    return sendJson(res, 200, { ok: true, deleted: result.changes });
+  }
+
+  if (req.method === "DELETE" && pathname === "/api/appointments") {
+    const result = db.prepare("DELETE FROM appointments").run();
+    emit("appointments", {});
+    return sendJson(res, 200, { ok: true, deleted: result.changes });
+  }
+
+  if (req.method === "DELETE" && pathname === "/api/notifications") {
+    const result = db.prepare("DELETE FROM notifications").run();
+    emit("notifications", {});
+    return sendJson(res, 200, { ok: true, deleted: result.changes });
+  }
+
   if (req.method === "GET" && pathname === "/api/conversations") {
     const search = `%${url.searchParams.get("search") || ""}%`;
     const mode = url.searchParams.get("mode");

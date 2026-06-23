@@ -36,6 +36,9 @@
           <button class="nav-item" data-view="notifications">
             <span class="nav-icon">◇</span> Notificações <b id="nav-notifications">0</b>
           </button>
+          <button class="nav-item" data-view="settings">
+            <span class="nav-icon">⚙</span> Configurações
+          </button>
         </nav>
         <div class="sidebar-foot">
           <span class="online-dot"></span>
@@ -92,6 +95,35 @@
             <button id="mark-read" class="button secondary">Marcar todas como lidas</button>
           </div>
           <div id="notification-list" class="notification-list"></div>
+        </section>
+
+        <section id="settings-view" class="view hidden">
+          <div class="section-heading">
+            <div><h2>Configurações</h2><p>Ações de manutenção da central.</p></div>
+          </div>
+          <div class="settings-list">
+            <article class="settings-action">
+              <div>
+                <h3>Limpar conversas</h3>
+                <p>Remove todas as conversas e o histórico de mensagens.</p>
+              </div>
+              <button class="button danger" data-clear="conversations">Limpar conversas</button>
+            </article>
+            <article class="settings-action">
+              <div>
+                <h3>Limpar consultas</h3>
+                <p>Remove todos os cards de consulta da aba Consultas.</p>
+              </div>
+              <button class="button danger" data-clear="appointments">Limpar consultas</button>
+            </article>
+            <article class="settings-action">
+              <div>
+                <h3>Limpar notificações</h3>
+                <p>Remove todas as notificações da aba Notificações.</p>
+              </div>
+              <button class="button danger" data-clear="notifications">Limpar notificações</button>
+            </article>
+          </div>
         </section>
       </main>
     </div>
