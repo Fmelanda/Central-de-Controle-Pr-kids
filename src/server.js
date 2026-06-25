@@ -273,7 +273,9 @@ function serveStatic(res, pathname) {
   };
   res.writeHead(200, securityHeaders({
     "content-type": types[extension] || "application/octet-stream",
-    "cache-control": extension === ".html" ? "no-store" : "public, max-age=3600",
+    "cache-control": [".html", ".css", ".js"].includes(extension)
+      ? "no-store"
+      : "public, max-age=3600",
   }));
   fs.createReadStream(file).pipe(res);
   return true;
