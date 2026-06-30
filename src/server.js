@@ -5,6 +5,7 @@ import path from "node:path";
 import { URL } from "node:url";
 import { addMessage, db, findOrCreateConversation, now } from "./db.js";
 import { formatErrorAlertMessage, recordIntegrationError } from "./errorAlerts.js";
+import { checkServiceStatuses, serviceStatusConfig } from "./serviceStatus.js";
 
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || "0.0.0.0";
@@ -751,12 +752,14 @@ async function handleApi(req, res, url) {
   }
 
   if (req.method === "GET" && pathname === "/api/summary") {
+    const services = await checkServiceStatuses(serviceStatusConfig());
     return sendJson(res, 200, {
       human: db.prepare("SELECT COUNT(*) total FROM conversations WHERE control_mode = 'human'").get().total,
       humanUnread: db.prepare("SELECT COUNT(*) total FROM conversations WHERE control_mode = 'human' AND unread_count > 0").get().total,
       unread: db.prepare("SELECT COALESCE(SUM(unread_count), 0) total FROM conversations").get().total,
       pendingAppointments: db.prepare("SELECT COUNT(*) total FROM appointments WHERE status = 'pending'").get().total,
       notifications: db.prepare("SELECT COUNT(*) total FROM notifications WHERE read_at IS NULL").get().total,
+      services,
     });
   }
 

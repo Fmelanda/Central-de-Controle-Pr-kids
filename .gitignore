@@ -45,3 +45,5 @@ Ruflo/
 # Environment variables
 .env.local
 .env.*.local
+
+n8n/

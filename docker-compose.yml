@@ -24,6 +24,9 @@ services:
       LOGIN_RATE_LIMIT: ${LOGIN_RATE_LIMIT:-10}
       INTEGRATION_RATE_LIMIT: ${INTEGRATION_RATE_LIMIT:-600}
       EVOLUTION_TIMEOUT_MS: ${EVOLUTION_TIMEOUT_MS:-15000}
+      N8N_HEALTH_URL: ${N8N_HEALTH_URL:-http://n8n:5678/healthz}
+      EVOLUTION_HEALTH_URL: ${EVOLUTION_HEALTH_URL:-http://evolution_api:8080}
+      SERVICE_STATUS_TIMEOUT_MS: ${SERVICE_STATUS_TIMEOUT_MS:-1500}
       # Dentro do Docker, localhost seria este proprio container.
       EVOLUTION_API_URL: ${EVOLUTION_API_URL_INTERNAL:-http://evolution_api:8080}
     ports:

@@ -59,12 +59,17 @@ APP_URL=https://seu-dominio.com
 COOKIE_SECURE=true
 TRUST_PROXY=true
 EVOLUTION_API_URL_INTERNAL=http://evolution_api:8080
+EVOLUTION_HEALTH_URL=http://evolution_api:8080
+N8N_HEALTH_URL=http://n8n:5678/healthz
+SERVICE_STATUS_TIMEOUT_MS=1500
 CENTRAL_BIND_ADDRESS=127.0.0.1
 CENTRAL_HOST_PORT=3001
 ```
 
 Se o container da Evolution tiver outro nome ou estiver em outra rede, troque
 `EVOLUTION_API_URL_INTERNAL` pelo endereço interno correto.
+Se o container do n8n tiver outro nome, troque `N8N_HEALTH_URL` para a URL
+interna correta, por exemplo `http://n8n:5678/healthz`.
 
 No n8n, que também está na rede `n8n_network`, configure:
 

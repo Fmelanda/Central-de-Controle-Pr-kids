@@ -96,6 +96,20 @@ function toast(message) {
   setTimeout(() => node.classList.remove("show"), 2800);
 }
 
+function renderSystemStatus(services = {}) {
+  const system = services.system || { status: "offline", label: "Sistema offline" };
+  const n8n = services.n8n || { status: "unknown", label: "n8n não verificado" };
+  const evolution = services.evolution || { status: "unknown", label: "Evolution não verificada" };
+  const title = $("#system-status-title");
+  const detail = $("#system-status-detail");
+  const dot = $("#system-status-dot");
+  if (!title || !detail || !dot) return;
+
+  title.textContent = system.label;
+  detail.textContent = `${n8n.label} | ${evolution.label}`;
+  dot.classList.toggle("offline", system.status !== "online");
+}
+
 async function enableDesktopNotifications() {
   if (!("Notification" in window) || Notification.permission !== "default") return;
   await Notification.requestPermission();
@@ -115,6 +129,7 @@ async function loadSummary() {
   $("#nav-appointments").textContent = summary.pendingAppointments;
   $("#nav-notifications").textContent = summary.notifications;
   $("#human-unread").textContent = summary.humanUnread;
+  renderSystemStatus(summary.services);
 }
 
 async function loadConversations(keepChat = true) {

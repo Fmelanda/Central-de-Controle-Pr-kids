@@ -19,6 +19,14 @@ test("human filter shows unread human conversation count", () => {
   assert.match(server, /control_mode = 'human' AND unread_count > 0/);
 });
 
+test("sidebar system status is rendered from n8n and Evolution health checks", () => {
+  assert.match(html, /id="system-status-title"/);
+  assert.match(html, /id="system-status-detail"/);
+  assert.match(html, /id="system-status-dot"/);
+  assert.match(app, /renderSystemStatus\(summary\.services\)/);
+  assert.match(server, /checkServiceStatuses/);
+});
+
 test("chat banners can be dismissed", () => {
   assert.match(app, /dismissible-banner/);
   assert.match(app, /data-dismiss-banner/);

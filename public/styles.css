@@ -34,6 +34,7 @@ nav { display: grid; gap: 8px; }
 .sidebar-foot strong, .sidebar-foot small { display: block; }
 .sidebar-foot strong { font-size: 12px; }.sidebar-foot small { color: #8fa8b7; font-size: 10px; margin-top: 2px; line-height: 1.35; }
 .online-dot { width: 9px; height: 9px; border-radius: 50%; background: #5ed6a8; box-shadow: 0 0 0 4px rgba(94,214,168,.12); }
+.online-dot.offline { background: #f06a6a; box-shadow: 0 0 0 4px rgba(240,106,106,.14); }
 main { min-width: 0; }
 .topbar { height: 96px; padding: 22px 34px; background: white; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
 h1, h2, h3, p { margin-top: 0; }
