@@ -1,49 +1,58 @@
-# Dependencias
+# Dependencies
 node_modules/
 
-# Variaveis e segredos locais
+# Local environment and secrets
 .env
 .env.*
 !.env.example
 
-# Banco, midias e dados persistentes locais
+# Local persistent data, SQLite and uploaded media
 data/
-ruvector*.db
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+*.db
 *.db-shm
 *.db-wal
+ruvector*.db
 
-# Logs e saidas locais
+# Logs and runtime output
 *.log
-server.out.log
-server.err.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+server.out.log
+server.err.log
 
-# Artefatos temporarios
+# Test/build/cache artifacts
 coverage/
+.nyc_output/
 .cache/
+dist/
+build/
+tmp/
+temp/
+
+# Local editor and OS files
 .DS_Store
 Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
 
-# Codex local configuration
-.agents/
+# Local agent/tool runtime state
 .codex/
-
-# Claude Flow runtime data
+.agents/
 .claude/
 .claude-flow/
 .swarm/
 .mcp.json
-AGENTS.md
-CLAUDE.md
-Ruflo/
 
-# Environment variables
-.env.local
-.env.*.local
-
-n8n/
+# Nested repositories or private local workflow exports
+n8n/.git/
+n8n/private/
+n8n/*.local.json
+n8n/*.secret.json

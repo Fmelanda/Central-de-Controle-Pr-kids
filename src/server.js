@@ -3,7 +3,7 @@ import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import { URL } from "node:url";
-import { addMessage, db, findOrCreateConversation, now } from "./db.js";
+import { addMessage, db, findOrCreateConversation, isAiEnabled, now, setSetting } from "./db.js";
 import { formatErrorAlertMessage, recordIntegrationError } from "./errorAlerts.js";
 import { checkServiceStatuses, serviceStatusConfig } from "./serviceStatus.js";
 
@@ -573,6 +573,26 @@ function responseMessage(contentType, text) {
   return text || mediaLabels[contentType] || "";
 }
 
+function settingsPayload() {
+  const aiEnabled = isAiEnabled();
+  return {
+    aiEnabled,
+    manualMode: !aiEnabled,
+  };
+}
+
+function effectiveControlMode(controlMode, settings = settingsPayload()) {
+  return settings.aiEnabled ? controlMode || "ai" : "human";
+}
+
+function withEffectiveControlMode(conversation, settings = settingsPayload()) {
+  if (!conversation) return conversation;
+  return {
+    ...conversation,
+    effective_control_mode: effectiveControlMode(conversation.control_mode, settings),
+  };
+}
+
 async function handleIntegration(req, res, pathname) {
   if (rateLimit(req, res, integrationAttempts, integrationRateLimit, 60 * 1000)) return;
   if (!validIntegration(req)) return sendJson(res, 401, { error: "Chave de integração inválida" });
@@ -583,10 +603,13 @@ async function handleIntegration(req, res, pathname) {
     const conversation = db.prepare(
       "SELECT id, phone, control_mode, handoff_reason FROM conversations WHERE phone = ?",
     ).get(phone);
+    const settings = settingsPayload();
+    const effectiveConversation = withEffectiveControlMode(conversation, settings);
     return sendJson(res, 200, {
-      exists: Boolean(conversation),
-      mode: conversation?.control_mode || "ai",
-      conversation,
+      exists: Boolean(effectiveConversation),
+      mode: effectiveControlMode(effectiveConversation?.control_mode, settings),
+      ...settings,
+      conversation: effectiveConversation,
     });
   }
 
@@ -753,14 +776,37 @@ async function handleApi(req, res, url) {
 
   if (req.method === "GET" && pathname === "/api/summary") {
     const services = await checkServiceStatuses(serviceStatusConfig());
+    const settings = settingsPayload();
+    const human = settings.aiEnabled
+      ? db.prepare("SELECT COUNT(*) total FROM conversations WHERE control_mode = 'human'").get().total
+      : db.prepare("SELECT COUNT(*) total FROM conversations").get().total;
+    const humanUnread = settings.aiEnabled
+      ? db.prepare("SELECT COUNT(*) total FROM conversations WHERE control_mode = 'human' AND unread_count > 0").get().total
+      : db.prepare("SELECT COUNT(*) total FROM conversations WHERE unread_count > 0").get().total;
     return sendJson(res, 200, {
-      human: db.prepare("SELECT COUNT(*) total FROM conversations WHERE control_mode = 'human'").get().total,
-      humanUnread: db.prepare("SELECT COUNT(*) total FROM conversations WHERE control_mode = 'human' AND unread_count > 0").get().total,
+      human,
+      humanUnread,
       unread: db.prepare("SELECT COALESCE(SUM(unread_count), 0) total FROM conversations").get().total,
       pendingAppointments: db.prepare("SELECT COUNT(*) total FROM appointments WHERE status = 'pending'").get().total,
       notifications: db.prepare("SELECT COUNT(*) total FROM notifications WHERE read_at IS NULL").get().total,
+      ...settings,
       services,
     });
+  }
+
+  if (req.method === "GET" && pathname === "/api/settings") {
+    return sendJson(res, 200, settingsPayload());
+  }
+
+  if (req.method === "PATCH" && pathname === "/api/settings/ai") {
+    const body = await readBody(req);
+    if (typeof body.enabled !== "boolean") {
+      return sendJson(res, 400, { error: "Campo obrigatorio: enabled booleano" });
+    }
+    setSetting("ai_enabled", body.enabled ? "true" : "false");
+    const settings = settingsPayload();
+    emit("settings", settings);
+    return sendJson(res, 200, settings);
   }
 
   if (req.method === "DELETE" && pathname === "/api/conversations") {
@@ -785,17 +831,17 @@ async function handleApi(req, res, url) {
   if (req.method === "GET" && pathname === "/api/conversations") {
     const search = `%${url.searchParams.get("search") || ""}%`;
     const mode = url.searchParams.get("mode");
-    const rows = mode && ["ai", "human"].includes(mode)
-      ? db.prepare(`
-          SELECT * FROM conversations
-          WHERE control_mode = ? AND (COALESCE(name, '') LIKE ? OR phone LIKE ?)
-          ORDER BY COALESCE(last_message_at, updated_at) DESC
-        `).all(mode, search, search)
-      : db.prepare(`
-          SELECT * FROM conversations
-          WHERE COALESCE(name, '') LIKE ? OR phone LIKE ?
-          ORDER BY COALESCE(last_message_at, updated_at) DESC
-        `).all(search, search);
+    const settings = settingsPayload();
+    const rows = db.prepare(`
+      SELECT * FROM conversations
+      WHERE COALESCE(name, '') LIKE ? OR phone LIKE ?
+      ORDER BY COALESCE(last_message_at, updated_at) DESC
+    `).all(search, search)
+      .map((conversation) => withEffectiveControlMode(conversation, settings))
+      .filter((conversation) =>
+        mode && ["ai", "human"].includes(mode)
+          ? conversation.effective_control_mode === mode
+          : true);
     return sendJson(res, 200, rows);
   }
 
@@ -808,7 +854,7 @@ async function handleApi(req, res, url) {
     const messages = db.prepare(
       "SELECT * FROM messages WHERE conversation_id = ? ORDER BY created_at",
     ).all(id);
-    return sendJson(res, 200, { conversation, messages });
+    return sendJson(res, 200, { conversation: withEffectiveControlMode(conversation), messages });
   }
 
   const controlMatch = pathname.match(/^\/api\/conversations\/(\d+)\/control$/);
@@ -821,8 +867,9 @@ async function handleApi(req, res, url) {
       WHERE id = ?
     `).run(body.mode, now(), id);
     if (!result.changes) return sendJson(res, 404, { error: "Conversa não encontrada" });
-    emit("control", { conversationId: id, mode: body.mode });
-    return sendJson(res, 200, { id, mode: body.mode });
+    const effectiveMode = effectiveControlMode(body.mode);
+    emit("control", { conversationId: id, mode: body.mode, effectiveMode });
+    return sendJson(res, 200, { id, mode: body.mode, effectiveMode });
   }
 
   const messageMatch = pathname.match(/^\/api\/conversations\/(\d+)\/messages$/);
@@ -833,7 +880,7 @@ async function handleApi(req, res, url) {
     const id = Number(messageMatch[1]);
     const conversation = db.prepare("SELECT * FROM conversations WHERE id = ?").get(id);
     if (!conversation) return sendJson(res, 404, { error: "Conversa não encontrada" });
-    if (conversation.control_mode !== "human") {
+    if (effectiveControlMode(conversation.control_mode) !== "human") {
       return sendJson(res, 409, { error: "Assuma o atendimento antes de enviar uma mensagem" });
     }
     try {

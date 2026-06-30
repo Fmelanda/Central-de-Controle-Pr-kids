@@ -32,3 +32,14 @@ test("chat banners can be dismissed", () => {
   assert.match(app, /data-dismiss-banner/);
   assert.match(css, /\.banner-close/);
 });
+
+test("settings view exposes AI switch and chat renders the effective mode", () => {
+  assert.match(html, /id="ai-enabled-switch"/);
+  assert.match(html, /Modo manual/);
+  assert.match(app, /function effectiveControlMode/);
+  assert.match(app, /effective_control_mode/);
+  assert.match(app, /\/api\/settings\/ai/);
+  assert.match(app, /events\.addEventListener\(event, \(\) => refresh\(\)\)/);
+  assert.match(app, /"settings"/);
+  assert.match(css, /\.switch/);
+});

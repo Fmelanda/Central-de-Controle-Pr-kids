@@ -5,6 +5,10 @@ const state = {
   search: "",
   appointments: [],
   notifications: [],
+  settings: {
+    aiEnabled: true,
+    manualMode: false,
+  },
   csrfToken: "",
 };
 
@@ -59,6 +63,14 @@ function safeMediaUrl(value = "") {
   return "";
 }
 
+function effectiveControlMode(conversation) {
+  return conversation.effective_control_mode || conversation.control_mode || "ai";
+}
+
+function modeLabel(mode) {
+  return mode === "human" ? "Humano" : "IA";
+}
+
 function renderMessageContent(message) {
   const mediaUrl = safeMediaUrl(message.media_url);
   if (message.content_type === "audio" && mediaUrl) {
@@ -110,6 +122,19 @@ function renderSystemStatus(services = {}) {
   dot.classList.toggle("offline", system.status !== "online");
 }
 
+function renderSettings() {
+  const switchInput = $("#ai-enabled-switch");
+  const label = $("#ai-mode-label");
+  if (!switchInput || !label) return;
+  switchInput.checked = state.settings.aiEnabled;
+  label.textContent = state.settings.aiEnabled ? "IA ativa" : "Modo manual";
+}
+
+async function loadSettings() {
+  state.settings = await api("/api/settings");
+  renderSettings();
+}
+
 async function enableDesktopNotifications() {
   if (!("Notification" in window) || Notification.permission !== "default") return;
   await Notification.requestPermission();
@@ -129,14 +154,17 @@ async function loadSummary() {
   $("#nav-appointments").textContent = summary.pendingAppointments;
   $("#nav-notifications").textContent = summary.notifications;
   $("#human-unread").textContent = summary.humanUnread;
+  state.settings = {
+    aiEnabled: summary.aiEnabled,
+    manualMode: summary.manualMode,
+  };
+  renderSettings();
   renderSystemStatus(summary.services);
 }
 
-async function loadConversations(keepChat = true) {
-  const params = new URLSearchParams({ search: state.search, mode: state.mode });
-  state.conversations = await api(`/api/conversations?${params}`);
-  $("#conversation-list").innerHTML = state.conversations.length
-    ? state.conversations.map((conversation) => `
+function renderConversationItem(conversation) {
+  const mode = effectiveControlMode(conversation);
+  return `
       <button class="conversation-item ${conversation.id === state.selectedId ? "active" : ""}" data-id="${conversation.id}">
         <div class="patient-avatar">${escapeHtml(initials(conversation.name, conversation.phone))}</div>
         <div class="conversation-copy">
@@ -145,10 +173,17 @@ async function loadConversations(keepChat = true) {
         </div>
         <div class="conversation-meta">
           <time>${dateLabel(conversation.last_message_at)}</time>
-          ${conversation.unread_count ? `<span class="unread">${conversation.unread_count}</span>` :
-            `<span class="mode-pill ${conversation.control_mode}">${conversation.control_mode === "human" ? "Humano" : "IA"}</span>`}
+          ${conversation.unread_count ? `<span class="unread">${conversation.unread_count}</span>` : ""}
+          <span class="mode-pill ${mode}">${modeLabel(mode)}</span>
         </div>
-      </button>`).join("")
+      </button>`;
+}
+
+async function loadConversations(keepChat = true) {
+  const params = new URLSearchParams({ search: state.search, mode: state.mode });
+  state.conversations = await api(`/api/conversations?${params}`);
+  $("#conversation-list").innerHTML = state.conversations.length
+    ? state.conversations.map(renderConversationItem).join("")
     : `<div class="empty-list">Nenhuma conversa encontrada.</div>`;
   $$(".conversation-item").forEach((button) => button.addEventListener("click", () => openChat(Number(button.dataset.id))));
   if (keepChat && state.selectedId && state.conversations.some((item) => item.id === state.selectedId)) {
@@ -163,7 +198,9 @@ async function openChat(id, reloadList = true) {
   state.selectedId = id;
   const { conversation, messages } = await api(`/api/conversations/${id}`);
   if (reloadList) await Promise.all([loadConversations(false), loadSummary()]);
-  const human = conversation.control_mode === "human";
+  const mode = effectiveControlMode(conversation);
+  const human = mode === "human";
+  const manualMode = state.settings.manualMode;
   $("#chat").className = "chat";
   $("#chat").innerHTML = `
     <header class="chat-header">
@@ -173,14 +210,14 @@ async function openChat(id, reloadList = true) {
         <span>${escapeHtml(conversation.phone)} · ${human ? "Atendimento humano" : "Agente de IA ativo"}</span>
       </div>
       <div class="chat-header-actions">
-        <span class="mode-pill ${conversation.control_mode}">${human ? "Humano" : "IA ativa"}</span>
-        <button id="control-button" class="button ${human ? "secondary" : "warn"}">
-          ${human ? "Devolver para a IA" : "Assumir conversa"}
+        <span class="mode-pill ${mode}">${human ? "Humano" : "IA ativa"}</span>
+        <button id="control-button" class="button ${manualMode ? "secondary" : human ? "secondary" : "warn"}" ${manualMode ? "disabled" : ""}>
+          ${manualMode ? "Modo manual ativo" : human ? "Devolver para a IA" : "Assumir conversa"}
         </button>
       </div>
     </header>
     ${conversation.handoff_reason ? `<div class="handoff-banner dismissible-banner"><span><strong>Motivo do chamado:</strong> ${escapeHtml(conversation.handoff_reason)}</span><button class="banner-close" type="button" data-dismiss-banner aria-label="Fechar aviso">x</button></div>` : ""}
-    ${human ? `<div class="human-control-banner dismissible-banner"><span><strong>Você está no controle desta conversa.</strong> As mensagens abaixo serão enviadas diretamente ao WhatsApp do paciente.</span><button class="banner-close" type="button" data-dismiss-banner aria-label="Fechar aviso">x</button></div>` : ""}
+    ${human ? `<div class="human-control-banner dismissible-banner"><span><strong>${manualMode ? "Modo manual global ativo." : "Você está no controle desta conversa."}</strong> As mensagens abaixo serão enviadas diretamente ao WhatsApp do paciente.</span><button class="banner-close" type="button" data-dismiss-banner aria-label="Fechar aviso">x</button></div>` : ""}
     <div id="messages" class="messages">
       ${messages.length ? messages.map((message) => `
         <div class="message ${message.direction}">
@@ -199,14 +236,16 @@ async function openChat(id, reloadList = true) {
   $$("[data-dismiss-banner]").forEach((button) => {
     button.addEventListener("click", () => button.closest(".dismissible-banner")?.remove());
   });
-  $("#control-button").addEventListener("click", async () => {
-    await api(`/api/conversations/${id}/control`, {
-      method: "PATCH",
-      body: JSON.stringify({ mode: human ? "ai" : "human" }),
+  if (!manualMode) {
+    $("#control-button").addEventListener("click", async () => {
+      await api(`/api/conversations/${id}/control`, {
+        method: "PATCH",
+        body: JSON.stringify({ mode: human ? "ai" : "human" }),
+      });
+      toast(human ? "Conversa devolvida para a IA" : "Você assumiu o atendimento");
+      await Promise.all([openChat(id), loadSummary()]);
     });
-    toast(human ? "Conversa devolvida para a IA" : "Você assumiu o atendimento");
-    await Promise.all([openChat(id), loadSummary()]);
-  });
+  }
   $("#composer").addEventListener("submit", async (event) => {
     event.preventDefault();
     const input = event.currentTarget.elements.text;
@@ -328,8 +367,30 @@ async function clearData(type, button) {
   }
 }
 
+async function updateAiSetting(enabled) {
+  const switchInput = $("#ai-enabled-switch");
+  const previous = { ...state.settings };
+  if (switchInput) switchInput.disabled = true;
+  try {
+    state.settings = await api("/api/settings/ai", {
+      method: "PATCH",
+      body: JSON.stringify({ enabled }),
+    });
+    renderSettings();
+    toast(enabled ? "IA reativada" : "Modo manual ativado");
+    await refresh();
+  } catch (error) {
+    state.settings = previous;
+    renderSettings();
+    toast(error.message);
+  } finally {
+    if (switchInput) switchInput.disabled = false;
+  }
+}
+
 async function refresh() {
-  await Promise.all([loadSummary(), loadConversations(), loadAppointments(), loadNotifications()]);
+  await loadSummary();
+  await Promise.all([loadConversations(), loadAppointments(), loadNotifications()]);
 }
 
 function switchView(view) {
@@ -347,6 +408,7 @@ function switchView(view) {
     loadNotifications();
     enableDesktopNotifications();
   }
+  if (view === "settings") loadSettings();
 }
 
 async function start() {
@@ -359,7 +421,7 @@ async function start() {
   $("#app").classList.remove("hidden");
   await refresh();
   const events = new EventSource("/api/events");
-  ["messages", "appointments", "control", "notifications"].forEach((event) => {
+  ["messages", "appointments", "control", "notifications", "settings"].forEach((event) => {
     events.addEventListener(event, () => refresh());
   });
   events.addEventListener("handoff", () => {
@@ -401,6 +463,9 @@ $("#mark-read").addEventListener("click", async () => {
 });
 $$("[data-clear]").forEach((button) => {
   button.addEventListener("click", () => clearData(button.dataset.clear, button));
+});
+$("#ai-enabled-switch").addEventListener("change", (event) => {
+  updateAiSetting(event.target.checked);
 });
 setInterval(() => {
   $("#clock").textContent = new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(new Date());

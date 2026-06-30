@@ -62,6 +62,12 @@ db.exec(`
     created_at TEXT NOT NULL
   );
 
+  CREATE TABLE IF NOT EXISTS app_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );
+
   CREATE INDEX IF NOT EXISTS idx_messages_conversation
     ON messages(conversation_id, created_at);
   CREATE INDEX IF NOT EXISTS idx_conversations_updated
@@ -88,6 +94,25 @@ ensureColumn("messages", "media_filename", "TEXT");
 
 export function now() {
   return new Date().toISOString();
+}
+
+export function getSetting(key, fallback = "") {
+  const row = db.prepare("SELECT value FROM app_settings WHERE key = ?").get(key);
+  return row?.value ?? fallback;
+}
+
+export function setSetting(key, value) {
+  db.prepare(`
+    INSERT INTO app_settings (key, value, updated_at)
+    VALUES (?, ?, ?)
+    ON CONFLICT(key) DO UPDATE SET
+      value = excluded.value,
+      updated_at = excluded.updated_at
+  `).run(key, String(value), now());
+}
+
+export function isAiEnabled() {
+  return getSetting("ai_enabled", "true") !== "false";
 }
 
 export function findOrCreateConversation({ phone, name, instance }) {

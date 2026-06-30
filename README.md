@@ -218,6 +218,11 @@ navegador dos funcionários.
 `GET /api/integrations/conversations/{telefone}/control`
 
 Resposta: `{ "mode": "ai" }` ou `{ "mode": "human" }`.
+Quando a IA da automação estiver desligada na aba Configurações, este endpoint
+sempre retorna `mode: "human"` para conversas novas e existentes. A Central
+também passa a mostrar todas as conversas como atendimento humano por meio do
+campo `effective_control_mode`, sem alterar o `control_mode` salvo em cada
+conversa.
 
 ### Solicitar atendimento humano
 

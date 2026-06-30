@@ -182,6 +182,76 @@ test("unsafe dashboard routes require a csrf token", async () => {
   assert.equal(accepted.status, 200);
 });
 
+test("manual mode exposes every conversation as effectively human", async () => {
+  const child = await startServer();
+  const cookie = await login(child.port);
+  const session = await fetch(`http://127.0.0.1:${child.port}/api/session`, {
+    headers: { cookie },
+  });
+  const { csrfToken } = await session.json();
+
+  const message = await fetch(`http://127.0.0.1:${child.port}/api/integrations/messages`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-integration-key": "i".repeat(32),
+    },
+    body: JSON.stringify({
+      phone: "5511999999999",
+      name: "Paciente IA",
+      direction: "inbound",
+      text: "Oi",
+    }),
+  });
+  assert.equal(message.status, 201);
+
+  const toggle = await fetch(`http://127.0.0.1:${child.port}/api/settings/ai`, {
+    method: "PATCH",
+    headers: { cookie, "x-csrf-token": csrfToken, "content-type": "application/json" },
+    body: JSON.stringify({ enabled: false }),
+  });
+  assert.equal(toggle.status, 200);
+  assert.deepEqual(await toggle.json(), { aiEnabled: false, manualMode: true });
+
+  const control = await fetch(
+    `http://127.0.0.1:${child.port}/api/integrations/conversations/5511999999999/control`,
+    { headers: { "x-integration-key": "i".repeat(32) } },
+  );
+  assert.equal(control.status, 200);
+  const controlBody = await control.json();
+  assert.equal(controlBody.mode, "human");
+  assert.equal(controlBody.conversation.control_mode, "ai");
+  assert.equal(controlBody.conversation.effective_control_mode, "human");
+
+  const conversations = await fetch(`http://127.0.0.1:${child.port}/api/conversations`, {
+    headers: { cookie },
+  });
+  assert.equal(conversations.status, 200);
+  const [conversation] = await conversations.json();
+  assert.equal(conversation.control_mode, "ai");
+  assert.equal(conversation.effective_control_mode, "human");
+
+  const humanFiltered = await fetch(`http://127.0.0.1:${child.port}/api/conversations?mode=human`, {
+    headers: { cookie },
+  });
+  assert.equal(humanFiltered.status, 200);
+  assert.equal((await humanFiltered.json()).length, 1);
+
+  const aiFiltered = await fetch(`http://127.0.0.1:${child.port}/api/conversations?mode=ai`, {
+    headers: { cookie },
+  });
+  assert.equal(aiFiltered.status, 200);
+  assert.equal((await aiFiltered.json()).length, 0);
+
+  const opened = await fetch(`http://127.0.0.1:${child.port}/api/conversations/${conversation.id}`, {
+    headers: { cookie },
+  });
+  assert.equal(opened.status, 200);
+  const openedBody = await opened.json();
+  assert.equal(openedBody.conversation.control_mode, "ai");
+  assert.equal(openedBody.conversation.effective_control_mode, "human");
+});
+
 test("integration media must be uploaded instead of linked to remote URLs", async () => {
   const child = await startServer();
   const response = await fetch(`http://127.0.0.1:${child.port}/api/integrations/messages`, {
