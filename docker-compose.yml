@@ -31,6 +31,14 @@ services:
       EVOLUTION_API_URL: ${EVOLUTION_API_URL_INTERNAL:-http://evolution_api:8080}
     ports:
       - "${CENTRAL_BIND_ADDRESS:-127.0.0.1}:${CENTRAL_HOST_PORT:-3001}:3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-proxy"
+      - "traefik.http.routers.central-controle.rule=Host(`central-controle.srv1770129.hstgr.cloud`)"
+      - "traefik.http.routers.central-controle.entrypoints=websecure"
+      - "traefik.http.routers.central-controle.tls=true"
+      - "traefik.http.routers.central-controle.tls.certresolver=letsencrypt"
+      - "traefik.http.services.central-controle.loadbalancer.server.port=3000"
     volumes:
       - central_data:/app/data
     networks:
