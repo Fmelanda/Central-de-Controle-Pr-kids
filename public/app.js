@@ -5,15 +5,21 @@ const state = {
   search: "",
   appointments: [],
   notifications: [],
+  csrfToken: "",
 };
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 
 async function api(url, options = {}) {
+  const method = String(options.method || "GET").toUpperCase();
+  const headers = { "content-type": "application/json", ...(options.headers || {}) };
+  if (!["GET", "HEAD", "OPTIONS"].includes(method) && state.csrfToken) {
+    headers["x-csrf-token"] = state.csrfToken;
+  }
   const response = await fetch(url, {
-    headers: { "content-type": "application/json", ...(options.headers || {}) },
     ...options,
+    headers,
   });
   const body = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(body.error || "Não foi possível concluir");
@@ -50,12 +56,6 @@ function safeMediaUrl(value = "") {
   const raw = String(value).trim();
   if (!raw) return "";
   if (raw.startsWith("/media/")) return raw;
-  try {
-    const parsed = new URL(raw, location.origin);
-    if (parsed.protocol === "http:" || parsed.protocol === "https:") return parsed.href;
-  } catch {
-    return "";
-  }
   return "";
 }
 
@@ -114,15 +114,7 @@ async function loadSummary() {
   $("#nav-unread").textContent = summary.unread;
   $("#nav-appointments").textContent = summary.pendingAppointments;
   $("#nav-notifications").textContent = summary.notifications;
-  $("#stats").innerHTML = [
-    ["◎", "Conversas não lidas", summary.unread],
-    ["H", "Em atendimento humano", summary.human],
-    ["□", "Consultas pendentes", summary.pendingAppointments],
-    ["◇", "Novas notificações", summary.notifications],
-  ].map(([icon, label, value]) => `
-    <div class="stat"><div class="stat-icon">${icon}</div>
-      <div><span>${label}</span><strong>${value}</strong></div>
-    </div>`).join("");
+  $("#human-unread").textContent = summary.humanUnread;
 }
 
 async function loadConversations(keepChat = true) {
@@ -172,8 +164,8 @@ async function openChat(id, reloadList = true) {
         </button>
       </div>
     </header>
-    ${conversation.handoff_reason ? `<div class="handoff-banner"><strong>Motivo do chamado:</strong> ${escapeHtml(conversation.handoff_reason)}</div>` : ""}
-    ${human ? `<div class="human-control-banner"><strong>Você está no controle desta conversa.</strong> As mensagens abaixo serão enviadas diretamente ao WhatsApp do paciente.</div>` : ""}
+    ${conversation.handoff_reason ? `<div class="handoff-banner dismissible-banner"><span><strong>Motivo do chamado:</strong> ${escapeHtml(conversation.handoff_reason)}</span><button class="banner-close" type="button" data-dismiss-banner aria-label="Fechar aviso">x</button></div>` : ""}
+    ${human ? `<div class="human-control-banner dismissible-banner"><span><strong>Você está no controle desta conversa.</strong> As mensagens abaixo serão enviadas diretamente ao WhatsApp do paciente.</span><button class="banner-close" type="button" data-dismiss-banner aria-label="Fechar aviso">x</button></div>` : ""}
     <div id="messages" class="messages">
       ${messages.length ? messages.map((message) => `
         <div class="message ${message.direction}">
@@ -189,6 +181,9 @@ async function openChat(id, reloadList = true) {
       <button class="button primary" type="submit" ${human ? "" : "disabled"}>Enviar</button>
     </form>`;
   $("#messages").scrollTop = $("#messages").scrollHeight;
+  $$("[data-dismiss-banner]").forEach((button) => {
+    button.addEventListener("click", () => button.closest(".dismissible-banner")?.remove());
+  });
   $("#control-button").addEventListener("click", async () => {
     await api(`/api/conversations/${id}/control`, {
       method: "PATCH",
@@ -345,6 +340,7 @@ async function start() {
     $("#login").classList.remove("hidden");
     return;
   }
+  state.csrfToken = session.csrfToken || "";
   $("#app").classList.remove("hidden");
   await refresh();
   const events = new EventSource("/api/events");

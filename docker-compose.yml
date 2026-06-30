@@ -27,7 +27,7 @@ services:
       # Dentro do Docker, localhost seria este proprio container.
       EVOLUTION_API_URL: ${EVOLUTION_API_URL_INTERNAL:-http://evolution_api:8080}
     ports:
-      - "3001:3000"
+      - "${CENTRAL_BIND_ADDRESS:-127.0.0.1}:${CENTRAL_HOST_PORT:-3001}:3000"
     volumes:
       - central_data:/app/data
     networks:

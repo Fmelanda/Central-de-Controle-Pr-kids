@@ -36,7 +36,10 @@ Este projeto inclui `Dockerfile` e `docker-compose.yml`. O Compose usa a rede ex
 docker compose up -d --build
 ```
 
-A central fica disponível em `http://localhost:3001`.
+A central fica disponivel em `http://localhost:3001`. Por seguranca, o Compose
+publica essa porta apenas em `127.0.0.1` por padrao. Na VPS, prefira acessar via
+Traefik pela rede Docker. Se precisar expor a porta diretamente, defina
+`CENTRAL_BIND_ADDRESS=0.0.0.0` no `.env`.
 
 Dentro de um container, `localhost` aponta para o próprio container. Por isso,
 o Compose substitui `EVOLUTION_API_URL` por `EVOLUTION_API_URL_INTERNAL`, cujo
@@ -56,6 +59,8 @@ APP_URL=https://seu-dominio.com
 COOKIE_SECURE=true
 TRUST_PROXY=true
 EVOLUTION_API_URL_INTERNAL=http://evolution_api:8080
+CENTRAL_BIND_ADDRESS=127.0.0.1
+CENTRAL_HOST_PORT=3001
 ```
 
 Se o container da Evolution tiver outro nome ou estiver em outra rede, troque
@@ -227,6 +232,29 @@ Resposta: `{ "mode": "ai" }` ou `{ "mode": "human" }`.
 `POST /api/integrations/appointments`
 
 Aceita diretamente o objeto `consulta` atual ou `{ "consulta": { ... } }`.
+
+### Registrar erro de automação
+
+`POST /api/integrations/errors`
+
+Use este endpoint no workflow de erro do n8n. A Central cria uma notificação
+interna do tipo `error` e mostra o alerta na aba Notificações.
+
+```json
+{
+  "source": "n8n",
+  "workflow": "Whatsap clinica + Central de Controle",
+  "node": "Central - Registrar recebida",
+  "message": "HTTP 500 from Central",
+  "stack": "trecho curto do stack/log",
+  "executionUrl": "https://n8n.seu-dominio/execution/123",
+  "occurredAt": "2026-06-30T10:20:30.000-03:00"
+}
+```
+
+Para alertas de erro da própria Central via WhatsApp, configure
+`ERROR_ALERT_PHONE` no `.env`. O workflow de erro do n8n também envia WhatsApp
+diretamente para esse número.
 
 ## Segurança
 

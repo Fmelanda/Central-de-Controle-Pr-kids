@@ -3,61 +3,22 @@
   "nodes": [
     {
       "parameters": {
-        "promptType": "define",
-        "text": "={{ $json.text }}",
-        "options": {
-          "systemMessage": "=Você é a Daniele, assistente da Clínica Pró-Kids, uma clínica médica especialista em pediatria.\nSua missão é: responder dúvidas de pacientes via WhatsApp.\nMantenha sempre um tom cordial, claro e profissional.\n\nBase de conhecimento da clínica Prókids:\n  \n  A. Especialidades da clínica\n    - Ortopedia Pediátrica: Essa especialidade médica é responsável pelo estudo e pelo tratamento das doenças, lesões e deformidades que atingem o aparelho locomotor, incluindo os ossos, músculos, tendões, articulações e ligamentos. A Ortopedia está relacionada também com outra especialidade, a Traumatologia, que trata das lesões provocadas por traumas como, por exemplo, as fraturas ósseas. No Instituto Pró-Kids a Ortopedia Pediátrica tem uma abrangência ainda maior, ao tratar as deformidades e auxiliar na programação da reabilitação das doenças neuromusculares como: paralisia cerebral, mielomeningocele, neuropatias, miopatias e outras.\n    - Neurocirurgia Pediátrica: Hidrocefalias, Endoscopia Cerebral, Craniossinostoses, Mielomeningoceles, Malformações do Sistema Nervoso, Tumores, Traumas, Tratamento Cirúrgico da Espasticidade.\n    - Cardiologia Pediátrica: Integra os conhecimentos voltados à área cardiológica e pediátrica, envolvendo o diagnóstico, prevenção e tratamento de disfunções ou problemas relacionados ao coração.\n    - Pediatria: A pediatria é a especialidade dedicada à saúde da criança e do adolescente. Atua no diagnóstico e tratamento das mais diversas doenças que comprometem a saúde do ser humano desde o nascimento até próximo à idade adulta. É a área da medicina indicada para orientar sobre aleitamento materno, imunização (vacinas), prevenção de acidentes e esclarecer a família sobre o crescimento e desenvolvimento saudável.\n\n  B. Informações dos Médicos\n    \n    Dr. Alessandro Melanda\n    Sobre: Referência nacional no tratamento de crianças com Paralisia Cerebral e deficiências no andar, com mais de 25 anos de experiência em Ortopedia Pediátrica e uma extensa formação internacional. Graduado em Medicina pela UNESP, especializou-se em Ortopedia Pediátrica com residência na AACD-SP e aperfeiçoou-se com um fellowship na Universidade da Califórnia, San Diego, nos Estados Unidos.\n    Convênios aceitos:\n    Observações:\n\n    Dr Alexandre Casagrande Canheu\n    Sobre: Dr. Alexandre Casagrande Canheu, fez especialização em Neurocirurgia pela Hospital das Clínicas da Faculdade de Medicina da USP de Ribeirão Preto, encerrada em 2005. Fez Fellowship em Neurocirurgia Pediátrica an UniversitatsMedizin Charitè de Berlim, Alemanha, em 2011, e esteve em vários estágios em serviços de excelência na Europa. É Membro Afiliado da European Society for Pediatric Neurosurgery, Membro da International Society for Pediatric Neurosurgery, International Fellow da American Society of Neurological Surgeons, ocupa o cargo de Conselheiro Deliberativo da Sociedade Brasileira de Neurocirurgia Pediátrica, e neste ano de 2019 foi Presidente do Consenso Brasileiro sobre Deformidade de Chiari I, realizado em Londrina nos dias 2 e 3 de agosto.\n    Convênios aceitos:\n    Observações:\n\n    Dr. Akira Motomatsu Jr - Indisponível\n    Sobre: Médico pediatra geral. Saiu da clínica Prókids recentemente, porém pacientes desinformados ainda perguntam sobre ele.\n    Convênios aceitos:\n    Observações: Para qualquer duvida sobre o doutor, o paciente deve entrar em contato com ele. Atualmente ele está atendendo pacientes na clínica: Neonato; Endereço: Rua Souza Naves 1044 sala 201, Londrina Pr; Telefone: (43)3020-3305.\n    \n    Dr. João Paulo Monteiro\n    Sobre: Médico do setor de urgência do Hospital Universitário de Londrina (UEL) e professor da instituição. Atua na área de ortopedia e traumatologia pediátrica. O Dr. João Paulo tem vasta experiência na manejo de pacientes que necessitem uso de fixadores externos para tratamento de afecções ortopédicas.\n    Convênios aceitos:\n    Observações:\n\n    Dra. Cristiane Ikeda\n    Sobre: Chefe da UTI do Hospital do Coração Unidade Bela Suiça e Ex. Chefe da UTI do Hospital Infantil de Londrina. Realiza a avaliação dos pacientes cardiológicos do Instituto Pró-Kids, Hospital Coração Bela Suiça e Hospital Infantil, realizando exames de alta complexidade como o ecocardiograma. A Dra Cristiane Ikeda é referência na cardiologia pediátrica com larga experiência na condução de casos complexos.\n    Convênios aceitos:\n    Observações:\n\n  C. Endereço da clínica Pró-Kids: Avenida Adhemar Pereira de Barros, 1199, Londrina – CEP 86047-250.\n\n  D. Horário de atendimento: segunda a sexta das 08h30 às 18h30\n\n  E. Informações gerais\n    - Data atual: {{ $now }}\n    - Numero de telefone do paciente: {{ $('Dados').item.json.numero }}\n\nFluxo de Atendimento:\n\n1. Saudação inicial\n“Olá, sou a Daniele, assistente da Clínica Pró-Kids. Como posso ajudar você hoje?”\n\n2. Identificação do motivo do contato:\n  Importante - Uma pergunta por vez!\n  Caso 1 - Dúvida relacionada à clínica: Use seu conhecimento sobre a clínica para responder.\n  Caso 2 - Dúvida relacionada a um médico: Use seu conhecimento sobre os médicos para responder.\n  Caso 3 - Marcar uma consulta: 1. Pergunte o motivo/condição médica para o paciente querer agendar uma consulta. 2. Pergunte o médico com o qual o paciente gostaria de marcar uma consulta. Caso o paciente não saiba o médico mais apropriado para sua condição ou queira marcar uma consulta com um médico não apropriado para sua condição, use sua base de conhecimento sobre os médicos para recomendar o médico mais apropriado. 3. Peça e colete os dias e horários de preferência do paciente para a consulta. 4. Peça e colete o nome e idade do paciente. 5. Monte um json \"consulta\" contendo: Numero de telefone do paciente; Nome; Idade; Motivo da consulta; Médico responsável pela consulta; Dias e horários preferidos pelo paciente para a consulta. 6. Adicione o json \"consulta\" em sua resposta, e no campo \"resposta\": \"Pronto! Logo mais entraremos em contato para terminar o agendamento da consulta. Obrigada, tenha um ótimo dia.\"\n\n3. Resposta\n  - Estrutura da resposta: Sua resposta deve ser SOMENTE um JSON válido.\n\nNão use Markdown.\nNão use ```json.\nNão use crases.\nNão escreva explicações fora do JSON.\n\nFormato obrigatório:\n\n{\n  \"resposta\": \"mensagem que será enviada ao paciente\",\n  \"handoff\": \"false\" ou \"true\",\n  \"handoff_motivo\": \"null\" ou \"motivo\",\n  \"consulta\": null\n}\n\nQuando todos os dados necessários para agendar uma consulta forem obtidos, use:\n\n{\n  \"resposta\": \"Pronto! Logo mais entraremos em contato para terminar o agendamento da consulta. Obrigada, tenha um ótimo dia.\",\n  \"handoff\": false,\n  \"handoff_motivo\": null,\n  \"consulta\": {\n    \"nome\": \"nome do paciente\",\n    \"idade\": \"idade do paciente\",\n    \"telefone\": \"telefone do paciente\",\n    \"motivo\": \"motivo da consulta\",\n    \"data\": \"Dias e horários preferidos pelo paciente para a consulta\",\n    \"medico\": \"médico ou especialidade\",\n  }\n}\n\nSe ainda não houver consulta marcada, mantenha \"consulta\": null.\n\nQuando precisar de atendimento humano:\n{\n  \"resposta\": \"Aguarde só um momento, vou chamar um funcionário para ajudar você.\",\n  \"consulta\": null,\n  \"handoff\": true,\n  \"handoff_motivo\": \"motivo do porque uma pessoa precisa assumir\"\n}\n\n  - Tom: Empático, profissional e simples.\n  - Objetividade: Responda sempre de forma clara, direta e resumida.\n  - Erros e exceções: Caso a duvida do paciente fuja de sua base de conhecimento ou você não tenha certeza da resposta, chame o atendimento humano.\n*IMPORTANTE: NÃO TENTE RESPONDER SE NÃO TIVER CERTEZA, NÃO INVENTE INFORMAÇÕES*"
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 2.1,
-      "position": [
-        2832,
-        1344
-      ],
-      "id": "65dc1884-caa4-4ae0-8886-5dda90ffc115",
-      "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "modelName": "models/gemini-flash-lite-latest",
-        "options": {
-          "temperature": 0.4
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-      "typeVersion": 1,
-      "position": [
-        2784,
-        1536
-      ],
-      "id": "727ec50e-9dc0-4160-a6e8-016990349635",
-      "name": "Google Gemini Chat Model",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "W9gxHOTxKFNI4cRq",
-          "name": "Google Gemini(PaLM) Api account 2"
-        }
-      }
-    },
-    {
-      "parameters": {
         "sessionIdType": "customKey",
         "sessionKey": "={{ $('Dados').item.json.numero }}",
-        "sessionTTL": 600,
+        "sessionTTL": 1800,
         "contextWindowLength": 10
       },
       "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
       "typeVersion": 1.5,
       "position": [
-        2928,
-        1568
+        -720,
+        416
       ],
-      "id": "c198dac3-698c-4265-a7cf-7f972363f978",
+      "id": "ce2273a6-0798-436c-9221-76a3d1527777",
       "name": "Redis Chat Memory",
       "credentials": {
         "redis": {
-          "id": "28YUoMBTJQ7upcxm",
+          "id": "muShVOaDXunFAzUU",
           "name": "Redis account"
         }
       }
@@ -67,20 +28,20 @@
         "resource": "messages-api",
         "instanceName": "={{ $('Dados').item.json.instancia }}",
         "remoteJid": "={{ $('Dados').item.json.numero }}",
-        "messageText": "={{ $('Code in JavaScript').item.json.resposta }}",
+        "messageText": "={{ $json.output }}",
         "options_message": {}
       },
       "type": "n8n-nodes-evolution-api.evolutionApi",
       "typeVersion": 1,
       "position": [
-        4064,
-        1344
+        432,
+        208
       ],
-      "id": "a43f58bb-1ad6-4b47-a924-373644442096",
+      "id": "478636ef-6b42-4658-80a3-0cb31a91f366",
       "name": "Enviar texto",
       "credentials": {
         "evolutionApi": {
-          "id": "edjnldQOwCuc9a3R",
+          "id": "F9TWPbCpohtihy6Y",
           "name": "Evolution account"
         }
       }
@@ -95,29 +56,29 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        2080,
-        1264
+        -1552,
+        128
       ],
-      "id": "98925fa1-9ff1-4576-b890-49d17d9fb2c8",
+      "id": "6a5c0c7b-b526-434b-af01-3d5c3b281098",
       "name": "push",
       "credentials": {
         "redis": {
-          "id": "28YUoMBTJQ7upcxm",
+          "id": "muShVOaDXunFAzUU",
           "name": "Redis account"
         }
       }
     },
     {
       "parameters": {
-        "amount": "=10"
+        "amount": "=3"
       },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        2272,
-        1264
+        -1360,
+        128
       ],
-      "id": "fab9548e-effc-403f-a25b-936f24f18a1d",
+      "id": "5b056994-31d1-4f3e-b9ff-6db0bac3d7fc",
       "name": "Wait",
       "webhookId": "43aa8e0d-8bb5-48d9-b869-620cb9651025"
     },
@@ -131,14 +92,14 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        2496,
-        1264
+        -1136,
+        128
       ],
-      "id": "e8b03f5a-249d-4c75-899b-f93f84c24943",
+      "id": "0125bd82-5f9d-4130-91e6-06710555ec24",
       "name": "msgs",
       "credentials": {
         "redis": {
-          "id": "28YUoMBTJQ7upcxm",
+          "id": "muShVOaDXunFAzUU",
           "name": "Redis account"
         }
       }
@@ -170,10 +131,10 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.2,
       "position": [
-        2064,
-        1504
+        -1568,
+        368
       ],
-      "id": "34d3bd0b-da63-4287-a05e-be0974a7c0a6",
+      "id": "4a6f1f98-5aec-48a7-9c83-53bd4f2e27a2",
       "name": "filterBuffer"
     },
     {
@@ -184,14 +145,14 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        2272,
-        1504
+        -1360,
+        368
       ],
-      "id": "b12fcb2a-691b-4d21-a6e3-19e0ecf515d8",
+      "id": "0836d55f-00fa-4f6f-9f58-13ad62864edc",
       "name": "deleteBuffer",
       "credentials": {
         "redis": {
-          "id": "28YUoMBTJQ7upcxm",
+          "id": "muShVOaDXunFAzUU",
           "name": "Redis account"
         }
       }
@@ -214,59 +175,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2496,
-        1504
+        -1136,
+        368
       ],
-      "id": "0c4a2164-6528-45b9-89bd-404b1e1eaf5a",
+      "id": "20258517-aaad-4123-8dc1-1abb563e8afe",
       "name": "junta_msgs"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "c690ee99-be1f-4027-a71b-51ab79f89339",
-              "leftValue": "={{ $json.consulta }}",
-              "rightValue": "",
-              "operator": {
-                "type": "object",
-                "operation": "empty",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        3776,
-        1360
-      ],
-      "id": "6827f5a9-19ff-4610-92da-a2a03f42b5bb",
-      "name": "If1"
-    },
-    {
-      "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "let raw = $json.output;\n\n// Se por algum motivo já vier como objeto, apenas retorna\nif (typeof raw !== 'string') {\n  return {\n    json: raw\n  };\n}\n\n// Remove ```json e ```\nraw = raw\n  .replace(/^```json\\s*/i, '')\n  .replace(/^```\\s*/i, '')\n  .replace(/\\s*```$/i, '')\n  .trim();\n\nconst parsed = JSON.parse(raw);\n\nreturn {\n  json: parsed\n};"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        3232,
-        1344
-      ],
-      "id": "e5c7196d-9aff-4500-bb7d-82fa25ca4398",
-      "name": "Code in JavaScript"
     },
     {
       "parameters": {
@@ -276,7 +189,7 @@
           "parameters": [
             {
               "name": "x-integration-key",
-              "value": "=SUBSTITUA_PELA_INTEGRATION_KEY_DA_CENTRAL"
+              "value": "={{ $env.CENTRAL_INTEGRATION_KEY }}"
             }
           ]
         },
@@ -285,12 +198,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1600,
-        1280
+        -2032,
+        144
       ],
-      "id": "4883d649-bafb-4d01-b465-8db33fc9e033",
-      "name": "Central - Consultar controle",
-      "continueOnFail": true
+      "id": "3a080464-01d7-4f2f-8f9e-b3864a0a1116",
+      "name": "Central - Consultar controle"
     },
     {
       "parameters": {
@@ -319,48 +231,15 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1776,
-        1280
+        -1856,
+        144
       ],
-      "id": "fda3d454-8ab5-4285-a0ce-3eeb3b388ad6",
+      "id": "2d7baf5c-6818-454e-804e-34ea4c700bfe",
       "name": "Central - IA ativa?"
     },
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "e85ff0d2-c193-4486-abb4-aa10a2362253",
-              "leftValue": "={{ $json.handoff }}",
-              "rightValue": true,
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        3488,
-        1344
-      ],
-      "id": "156f95ce-1f30-4797-8fea-0e8a2d292af2",
-      "name": "Central - Solicita humano?"
-    },
-    {
-      "parameters": {
+        "toolDescription": "Use esta ferramenta quando a conversa precisar ser assumida por um funcionário humano. Use se o paciente pedir uma pessoa, se a dúvida fugir da base de conhecimento, se houver incerteza médica/administrativa, reclamação, urgência ou qualquer situação em que você não deva responder sozinho. Informe um motivo curto e claro.",
         "method": "POST",
         "url": "=http://central_controle:3000/api/integrations/handoff",
         "sendHeaders": true,
@@ -368,28 +247,32 @@
           "parameters": [
             {
               "name": "x-integration-key",
-              "value": "=SUBSTITUA_PELA_INTEGRATION_KEY_DA_CENTRAL"
+              "value": "={{ $env.CENTRAL_INTEGRATION_KEY }}"
             }
           ]
         },
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ phone: $('Dados').item.json.numero, name: $('Dados').item.json['nome da pessoa'], instance: $('Dados').item.json.instancia, reason: $('Code in JavaScript').item.json.handoff_motivo || 'Atendimento humano solicitado' }) }}",
-        "options": {}
+        "body": "={{ JSON.stringify({ phone: $('Dados').item.json.numero, name: $('Dados').item.json['nome da pessoa'], instance: $('Dados').item.json.instancia, reason: $fromAI('motivo', 'Motivo curto e claro para solicitar atendimento humano', 'string') || 'Atendimento humano solicitado' }) }}",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
       },
-      "type": "n8n-nodes-base.httpRequest",
+      "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        3616,
-        1184
+        -448,
+        528
       ],
-      "id": "88deaa31-c3d1-4402-8822-a68261622f9a",
-      "name": "Central - Abrir chamado humano",
-      "continueOnFail": true
+      "id": "0be2bdb8-5d9a-4997-9b77-c63d71225a70",
+      "name": "Central - Abrir chamado humano"
     },
     {
       "parameters": {
+        "toolDescription": "Use esta ferramenta somente depois de coletar todos os dados necessários para a solicitação de consulta: nome do paciente, idade, motivo da consulta, médico ou especialidade e dias/horários preferidos. O telefone vem automaticamente do WhatsApp. Depois de usar a ferramenta, confirme ao paciente que a equipe entrará em contato para terminar o agendamento.",
         "method": "POST",
         "url": "=http://central_controle:3000/api/integrations/appointments",
         "sendHeaders": true,
@@ -397,25 +280,28 @@
           "parameters": [
             {
               "name": "x-integration-key",
-              "value": "=SUBSTITUA_PELA_INTEGRATION_KEY_DA_CENTRAL"
+              "value": "={{ $env.CENTRAL_INTEGRATION_KEY }}"
             }
           ]
         },
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ consulta: $('Code in JavaScript').item.json.consulta, instance: $('Dados').item.json.instancia }) }}",
-        "options": {}
+        "body": "={{ JSON.stringify({ consulta: { nome: $fromAI('nome', 'Nome completo do paciente', 'string'), idade: $fromAI('idade', 'Idade do paciente', 'string'), telefone: $('Dados').item.json.numero, motivo: $fromAI('motivo', 'Motivo ou condição médica da consulta', 'string'), data: $fromAI('data', 'Dias e horários preferidos pelo paciente', 'string'), medico: $fromAI('medico', 'Médico ou especialidade indicada para a consulta', 'string') }, instance: $('Dados').item.json.instancia }) }}",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
       },
-      "type": "n8n-nodes-base.httpRequest",
+      "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        3920,
-        1568
+        -224,
+        528
       ],
-      "id": "916a3a1b-0b78-4110-8225-51d06e75feba",
-      "name": "Central - Registrar consulta",
-      "continueOnFail": true
+      "id": "7e16db18-d35b-4991-908c-bca473dbc1cb",
+      "name": "Central - Registrar consulta"
     },
     {
       "parameters": {
@@ -426,25 +312,24 @@
           "parameters": [
             {
               "name": "x-integration-key",
-              "value": "=SUBSTITUA_PELA_INTEGRATION_KEY_DA_CENTRAL"
+              "value": "={{ $env.CENTRAL_INTEGRATION_KEY }}"
             }
           ]
         },
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ phone: $('Dados').item.json.numero, name: $('Dados').item.json['nome da pessoa'], instance: $('Dados').item.json.instancia, direction: 'outbound', senderType: 'ai', text: $('Code in JavaScript').item.json.resposta }) }}",
+        "body": "={{ JSON.stringify({ phone: $('Dados').item.json.numero, name: $('Dados').item.json['nome da pessoa'], instance: $('Dados').item.json.instancia, direction: 'outbound', senderType: 'ai', text: $('AI Agent').item.json.output }) }}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        4304,
-        1344
+        672,
+        208
       ],
-      "id": "7613be1d-219e-4a6d-bc8a-8b5f05b09a1b",
-      "name": "Central - Registrar resposta IA",
-      "continueOnFail": true
+      "id": "bda188f7-3ff4-4c86-966f-56827ed6aa80",
+      "name": "Central - Registrar resposta IA"
     },
     {
       "parameters": {
@@ -457,10 +342,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        144,
-        1280
+        -3488,
+        144
       ],
-      "id": "e39b2057-d27a-4976-b237-1888b1c2995f",
+      "id": "c9169a47-3e29-4319-a0a9-f87b73640a37",
       "name": "Webhook EVO",
       "webhookId": "9f4f41ab-fc98-427f-ab55-5bcf092d9c51"
     },
@@ -473,7 +358,7 @@
           "parameters": [
             {
               "name": "x-integration-key",
-              "value": "=SUBSTITUA_PELA_INTEGRATION_KEY_DA_CENTRAL"
+              "value": "={{ $env.CENTRAL_INTEGRATION_KEY }}"
             }
           ]
         },
@@ -486,12 +371,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1328,
-        1280
+        -2304,
+        144
       ],
-      "id": "5ec3f366-a051-4468-b797-96f21e320032",
-      "name": "Central - Registrar recebida",
-      "continueOnFail": true
+      "id": "272c89e3-c16c-41e9-b4fa-871125268b4d",
+      "name": "Central - Registrar recebida"
     },
     {
       "parameters": {
@@ -562,25 +446,76 @@
                     "operator": {
                       "type": "string",
                       "operation": "equals"
-                    }
+                    },
+                    "id": "3d635754-1e1b-4e64-bc3c-b4efb1810e91"
                   }
                 ],
                 "combinator": "and"
               },
               "renameOutput": true,
               "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "f0fde968-f2f7-4118-854a-dcb2999bbf3f",
+                    "leftValue": "={{ $('Webhook EVO').item.json.body.data.messageType }}",
+                    "rightValue": "imageMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "e27e58b0-6464-4e67-8982-6bbff45068c7",
+                    "leftValue": "={{ $('Webhook EVO').item.json.body.data.messageType }}",
+                    "rightValue": "documentMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "document"
             }
           ]
         },
         "options": {}
       },
-      "id": "937855b4-4ef3-462e-b270-4c2ddc7fd335",
+      "id": "7f09db90-adbf-4ac3-912d-1cd836eef376",
       "name": "Switch1",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        368,
-        1264
+        -3264,
+        128
       ]
     },
     {
@@ -593,13 +528,13 @@
           "mimeType": "application/ogg"
         }
       },
-      "id": "19ee818b-e9e1-4a4a-a793-bf97a94caf3d",
+      "id": "6ba07bfe-0730-45bb-bc0c-b44620b793c9",
       "name": "Convert to File",
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        672,
-        1440
+        -2848,
+        304
       ]
     },
     {
@@ -616,37 +551,14 @@
         },
         "options": {}
       },
-      "id": "f17fdc40-fd24-4082-8637-12573cd0fd28",
+      "id": "e5735225-213d-4cfd-9cad-519aee2621af",
       "name": "Edit Fields1",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        528,
-        1440
+        -2992,
+        304
       ]
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "68f2163b-37a2-49e6-93d2-1fabb50305d0",
-              "name": "text",
-              "value": "={{ $('Webhook EVO').item.json.body.data.message.conversation || $('Webhook EVO').item.json.body.data.message.extendedTextMessage?.text || '' }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        608,
-        1280
-      ],
-      "id": "02574693-f058-4b4f-baca-515252c27ef5",
-      "name": "text"
     },
     {
       "parameters": {
@@ -667,7 +579,7 @@
             {
               "id": "25fffbd2-072d-413b-bd3d-740e6e776124",
               "name": "mensagem ",
-              "value": "={{ $json.text || $json.data }}",
+              "value": "={{ $('Webhook EVO').item.json.body.data.message.conversation || $('Webhook EVO').item.json.body.data.message.extendedTextMessage?.text || $json.data }}",
               "type": "string"
             },
             {
@@ -690,19 +602,19 @@
             },
             {
               "id": "859c38af-e853-47c1-8c05-928f7f2a50d0",
-              "name": "audio base64",
+              "name": "base64",
               "value": "={{ $('Webhook EVO').item.json.body.data.message.base64 || '' }}",
               "type": "string"
             },
             {
               "id": "abdf84d3-eefb-47c0-9729-b2ca7452a6aa",
-              "name": "audio mime",
+              "name": "mime",
               "value": "={{ $('Webhook EVO').item.json.body.data.message.audioMessage?.mimetype || 'audio/ogg' }}",
               "type": "string"
             },
             {
               "id": "cae87733-a714-49d5-a180-4bd5362c1f82",
-              "name": "audio filename",
+              "name": "filename",
               "value": "={{ $('Webhook EVO').item.json.body.data.key.id + '.ogg' }}",
               "type": "string"
             }
@@ -713,10 +625,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1040,
-        1280
+        -2592,
+        144
       ],
-      "id": "749fc9a5-1b8e-4d3f-9fb8-666298711335",
+      "id": "fc5f3cb9-84d6-4c5f-8b03-9fb065e06078",
       "name": "Dados"
     },
     {
@@ -739,43 +651,213 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        848,
-        1440
+        -2704,
+        304
       ],
-      "id": "8357b715-080f-4608-b36c-830453c303ae",
+      "id": "a2ff0189-e88c-402a-bb02-8832c6f681fc",
       "name": "transcription"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://central_controle:3000/api/integrations/handoff",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-integration-key",
+              "value": "={{ $env.CENTRAL_INTEGRATION_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ phone: $('Dados1').item.json.numero, name: $('Dados1').item.json['nome da pessoa'], instance: $('Dados1').item.json.instancia, reason: 'Imagem/Documento recebido' }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2688,
+        560
+      ],
+      "id": "b75b9454-8737-4fbf-b053-baef1580e185",
+      "name": "Central - Abrir chamado humano1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://central_controle:3000/api/integrations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-integration-key",
+              "value": "={{ $env.CENTRAL_INTEGRATION_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({\n  phone: $('Dados1').item.json.numero,\n  name: $('Dados1').item.json['nome da pessoa'],\n  instance: $('Dados1').item.json.instancia,\n  direction: 'inbound',\n  senderType: 'patient',\n  contentType: 'image',\n  text: $('Dados1').item.json['mensagem '] || '',\n  image: {\n    base64: $('Dados1').item.json['base64'],\n    mimeType: $('Dados1').item.json['mime'],\n    filename: $('Dados1').item.json['filename']\n  },\n  externalId: $('Dados1').item.json['id da mensagem']\n}) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2864,
+        560
+      ],
+      "id": "044476e7-c199-42fb-8762-32cc4cf59054",
+      "name": "Central - Registrar imagem recebida"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3bb769dd-fe99-4157-9c8f-8f3a5a2e10e4",
+              "name": "numero",
+              "value": "={{ $('Webhook EVO').item.json.body.data.key.senderPn || $('Webhook EVO').item.json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "499e4238-87c8-4eac-b6a4-f7467be74c8d",
+              "name": "instancia",
+              "value": "={{ $('Webhook EVO').item.json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "25fffbd2-072d-413b-bd3d-740e6e776124",
+              "name": "mensagem ",
+              "value": "={{ $json.body.data.message.imageMessage.caption }}",
+              "type": "string"
+            },
+            {
+              "id": "117dcb14-3994-45c3-b850-707746f192e0",
+              "name": "id da mensagem",
+              "value": "={{ $('Webhook EVO').item.json.body.data.key.id }}",
+              "type": "string"
+            },
+            {
+              "id": "7004b57d-9d79-4915-82af-d1ceda291d9e",
+              "name": "nome da pessoa",
+              "value": "={{ $('Webhook EVO').item.json.body.data.pushName }}",
+              "type": "string"
+            },
+            {
+              "id": "9fc49d08-25e1-4b58-aa25-237a5d27e871",
+              "name": "tipo da mensagem",
+              "value": "={{ $('Webhook EVO').item.json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "859c38af-e853-47c1-8c05-928f7f2a50d0",
+              "name": "base64",
+              "value": "={{ $('Webhook EVO').item.json.body.data.message.base64 || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "abdf84d3-eefb-47c0-9729-b2ca7452a6aa",
+              "name": "mime",
+              "value": "={{ $json.body.data.message.imageMessage.mimetype || $json.body.data.message.documentMessage.mimetype }}",
+              "type": "string"
+            },
+            {
+              "id": "cae87733-a714-49d5-a180-4bd5362c1f82",
+              "name": "filename",
+              "value": "={{ $json.body.data.key.id }}{{ $json.body.data.message.imageMessage.mimetype || $json.body.data.message.documentMessage.mimetype }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3040,
+        560
+      ],
+      "id": "4c33e142-51a5-4f90-a9d3-206eb1da31c3",
+      "name": "Dados1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -1136,
+        656
+      ],
+      "id": "a66be4c8-5141-4a00-9edd-666fbb3940c4",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "wRxGMvZ5Uoy9LmOH",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=Você é a Daniele, assistente da Clínica Pró-Kids, uma clínica médica especialista em pediatria.\nSua missão é responder dúvidas e marcar consultas de pacientes via WhatsApp \nMantenha sempre um tom cordial, claro e profissional.\n\nBase de conhecimento da clínica Prókids:\n\nA. Informações dos Médicos\n   \nDr. Alessandro Melanda\n- Especialidade: Ortopedia Pediátrica - Referência nacional no tratamento de crianças com Paralisia Cerebral e deficiências no andar. Tratamento das doenças, lesões e deformidades que atingem o aparelho locomotor, incluindo os ossos, músculos, tendões, articulações e ligamentos. Também trata as deformidades e auxilia na programação da reabilitação das doenças neuromusculares como: paralisia cerebral, mielomeningocele, neuropatias, miopatias e outras.\n- Convênios aceitos: Não aceita convênios, apenas particular.\n- Observações: \n\nDr Alexandre Casagrande Canheu\n- Especialidade: Neurocirurgia Pediátrica - Hidrocefalias, Endoscopia Cerebral, Craniossinostoses, Mielomeningoceles, Malformações do Sistema Nervoso, Tumores, Traumas, Tratamento Cirúrgico da Espasticidade.\n- Convênios aceitos: Hospitalar.\n- Observações: \n\nDr. Akira Motomatsu Jr - Indisponível\n- Especialidade: Pediatria geral.\n- Convênios aceitos: Paciente deve entrar em contato com ele.\n- Observações: Saiu da clínica Prókids recentemente, porém pacientes desinformados ainda perguntam sobre ele. Para qualquer dúvida sobre o doutor, o paciente deve entrar em contato com ele. Atualmente ele está atendendo pacientes na clínica: Neonato;  Endereço: Rua Souza Naves 1044 sala 201, Londrina Pr; Telefone: (43)3020-3305.\n    \nDr. João Paulo Monteiro\n- Especialidade: Ortopedia e traumatologia pediátrica. Vasta experiência na manejo de pacientes que necessitem uso de fixadores externos para tratamento de afecções ortopédicas.\n- Convênios aceitos: Unimed.\n- Observações: \n\nDra. Cristiane Ikeda\n- Especialidade: Cardiologia Pediátrica - Referência na cardiologia pediátrica com larga experiência na condução de casos complexos. Realiza exames, diagnóstico, prevenção e tratamento de disfunções ou problemas relacionados ao coração.\n- Convênios aceitos: Unimed e Hospitalar.\n- Observações:\n\nB. Informações da clínica Pró-kids\n\n- Endereço da clínica Pró-Kids: Avenida Adhemar Pereira de Barros, 1199, Londrina – CEP 86047-250.\n- Horário de atendimento: segunda a sexta das 08h30 às 18h30.\n\nC. Informações gerais\n\n- Data atual: {{ $now }}\n- Numero de telefone do paciente: {{ $('Dados').item.json.numero }}\n\nFluxo de Atendimento:\n\n1. Saudação inicial - Somente na primeira interação\n“Olá, sou a Daniele, assistente da Clínica Pró-Kids. Como posso ajudar você hoje?”\n\n2. Identificação do motivo do contato - Uma pergunta por vez!\n- Caso 1 - Dúvida relacionada à clínica: Use seu conhecimento sobre a clínica para responder.\n- Caso 2 - Dúvida relacionada a um médico: Use seu conhecimento sobre os médicos para responder.\n- Caso 3 - Marcar uma consulta: 1. Pergunte o motivo para o paciente querer agendar uma consulta. 2. Pergunte o médico com o qual o paciente gostaria de marcar uma consulta. Caso o paciente não saiba o médico mais apropriado para sua condição ou queira marcar uma consulta com um médico não apropriado para sua condição, use sua base de conhecimento sobre os médicos para recomendar o médico mais apropriado. 3. Peça e colete os dias e horários de preferência do paciente para a consulta. 4. Peça e colete o nome e idade do paciente. 5. Quando tiver todos os dados, use a tool `Central - Registrar consulta` com: número de telefone, nome, idade, motivo da consulta, médico responsável e dias/horários preferidos. 6. Depois de usar a tool, responda: \"Pronto! Logo mais entraremos em contato para terminar o agendamento da consulta. Obrigada, tenha um ótimo dia.\"\n\n3. Resposta\n- Responda ao paciente em texto normal, sem JSON, sem Markdown e sem blocos de código.\n- Quando todos os dados de consulta forem coletados, use a tool `Central - Registrar consulta` antes de responder: \"Pronto! Logo mais entraremos em contato para terminar o agendamento da consulta. Obrigada, tenha um ótimo dia.\"\n- Quando precisar de atendimento humano, use a tool `Central - Abrir chamado humano` antes de responder: \"Aguarde só um momento, vou chamar um funcionário para ajudar você.\"\n- Se ainda faltar algum dado para consulta, faça apenas uma pergunta por vez.\n- Tom: Empático, profissional e simples.\n- Objetividade: Responda sempre de forma clara, direta e resumida.\n- Erros e exceções: Caso a dúvida do paciente fuja de sua base de conhecimento ou você não tenha certeza da resposta, chame o atendimento humano usando a tool.\n*IMPORTANTE: NÃO TENTE RESPONDER SE NÃO TIVER CERTEZA, NÃO INVENTE INFORMAÇÕES*\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -800,
+        208
+      ],
+      "id": "3a142ea3-2dfd-4777-960f-a8fae76ae11e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -864,
+        384
+      ],
+      "id": "74aea870-2f3a-40e3-bede-15f2da70e92b",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "fypklZmUAbq72Mu4",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
     }
   ],
   "pinData": {},
   "connections": {
-    "Google Gemini Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Redis Chat Memory": {
       "ai_memory": [
         [
           {
             "node": "AI Agent",
             "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "AI Agent": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript",
-            "type": "main",
             "index": 0
           }
         ]
@@ -858,35 +940,6 @@
         ]
       ]
     },
-    "Code in JavaScript": {
-      "main": [
-        [
-          {
-            "node": "Central - Solicita humano?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If1": {
-      "main": [
-        [
-          {
-            "node": "Enviar texto",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Central - Registrar consulta",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Central - Consultar controle": {
       "main": [
         [
@@ -906,45 +959,26 @@
             "type": "main",
             "index": 0
           }
-        ],
-        []
-      ]
-    },
-    "Central - Solicita humano?": {
-      "main": [
-        [
-          {
-            "node": "Central - Abrir chamado humano",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "If1",
-            "type": "main",
-            "index": 0
-          }
         ]
       ]
     },
     "Central - Abrir chamado humano": {
-      "main": [
+      "ai_tool": [
         [
           {
-            "node": "If1",
-            "type": "main",
+            "node": "AI Agent",
+            "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     },
     "Central - Registrar consulta": {
-      "main": [
+      "ai_tool": [
         [
           {
-            "node": "Enviar texto",
-            "type": "main",
+            "node": "AI Agent",
+            "type": "ai_tool",
             "index": 0
           }
         ]
@@ -965,14 +999,14 @@
       "main": [
         [
           {
-            "node": "text",
+            "node": "Dados",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "text",
+            "node": "Dados",
             "type": "main",
             "index": 0
           }
@@ -980,6 +1014,20 @@
         [
           {
             "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Dados1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Dados1",
             "type": "main",
             "index": 0
           }
@@ -1002,17 +1050,6 @@
         [
           {
             "node": "Convert to File",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "text": {
-      "main": [
-        [
-          {
-            "node": "Dados",
             "type": "main",
             "index": 0
           }
@@ -1051,18 +1088,69 @@
           }
         ]
       ]
+    },
+    "Central - Registrar imagem recebida": {
+      "main": [
+        [
+          {
+            "node": "Central - Abrir chamado humano1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados1": {
+      "main": [
+        [
+          {
+            "node": "Central - Registrar imagem recebida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "availableInMCP": false
   },
-  "versionId": "64c5799e-f574-4f8f-8077-b04dfd2bd32b",
+  "versionId": "ef81a8d9-95b8-4fcd-ab29-50de159dab65",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "43115683930834c9821c33451b75815b597676bb5f52519c4b254ee77f3564ac"
+    "instanceId": "ffec9525f6b75192113f31d6bc5b000fb11e2458d666acaebb513b673b1ee813"
   },
-  "id": "zX3aoCZKUP9Ly5mN",
+  "nodeGroups": [],
+  "id": "XQx6wUbcPgG1ujdY",
   "tags": []
 }

@@ -8,9 +8,12 @@ node_modules/
 
 # Banco, midias e dados persistentes locais
 data/
+ruvector*.db
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+*.db-shm
+*.db-wal
 
 # Logs e saidas locais
 *.log
@@ -25,3 +28,20 @@ coverage/
 .cache/
 .DS_Store
 Thumbs.db
+
+# Codex local configuration
+.agents/
+.codex/
+
+# Claude Flow runtime data
+.claude/
+.claude-flow/
+.swarm/
+.mcp.json
+AGENTS.md
+CLAUDE.md
+Ruflo/
+
+# Environment variables
+.env.local
+.env.*.local

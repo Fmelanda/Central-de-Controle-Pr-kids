@@ -4,6 +4,7 @@ import http from "node:http";
 import path from "node:path";
 import { URL } from "node:url";
 import { addMessage, db, findOrCreateConversation, now } from "./db.js";
+import { formatErrorAlertMessage, recordIntegrationError } from "./errorAlerts.js";
 
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || "0.0.0.0";
@@ -30,6 +31,7 @@ const placeholderSecrets = new Set([
   "desenvolvimento-local",
   "troque-esta-senha",
   "troque-por-uma-chave-longa-e-aleatoria",
+  "troque-por-outra-chave-longa-e-aleatoria",
   "changeme",
   "change-me",
   "password",
@@ -186,6 +188,21 @@ function validSession(req) {
   if (!expiry || Number(expiry) < Date.now() || !signature) return false;
   const expected = crypto.createHmac("sha256", sessionSecret()).update(expiry).digest("hex");
   return safeEqual(signature, expected);
+}
+
+function csrfToken(req) {
+  const session = cookies(req).central_session;
+  if (!session) return "";
+  return crypto.createHmac("sha256", sessionSecret()).update(`csrf:${session}`).digest("hex");
+}
+
+function unsafeDashboardMethod(req) {
+  return !["GET", "HEAD", "OPTIONS"].includes(req.method);
+}
+
+function validCsrf(req) {
+  if (!unsafeDashboardMethod(req)) return true;
+  return safeEqual(req.headers["x-csrf-token"], csrfToken(req));
 }
 
 function validIntegration(req) {
@@ -357,13 +374,7 @@ function safeMediaUrl(value) {
   const raw = String(value || "").trim();
   if (!raw) return "";
   if (raw.startsWith("/media/")) return raw;
-  try {
-    const parsed = new URL(raw);
-    if (parsed.protocol === "http:" || parsed.protocol === "https:") return parsed.toString();
-  } catch {
-    // handled below
-  }
-  throw httpError(400, "URL de mídia inválida");
+  throw httpError(400, "URL de midia externa nao permitida. Envie a midia em base64.");
 }
 
 function decodeBase64Media(input) {
@@ -530,6 +541,29 @@ async function sendEvolutionMessage(conversation, text) {
   }
 }
 
+async function notifyAdminAboutServerError(error, req) {
+  const phone = process.env.ERROR_ALERT_PHONE;
+  if (!phone) return;
+
+  const event = {
+    source: "central",
+    workflow: "Central de Controle",
+    node: `${req.method} ${String(req.url || "/").split("?")[0]}`,
+    message: error.message || "Erro interno",
+    stack: isProduction ? "" : error.stack,
+    occurredAt: now(),
+  };
+
+  try {
+    await sendEvolutionMessage({
+      phone,
+      instance: process.env.ERROR_ALERT_INSTANCE || process.env.EVOLUTION_DEFAULT_INSTANCE,
+    }, `🚨 Erro na Central\n\n${formatErrorAlertMessage(event)}`);
+  } catch (alertError) {
+    console.warn("[alerta] Falha ao enviar alerta de erro no WhatsApp:", alertError.message);
+  }
+}
+
 function requireFields(body, fields) {
   return fields.filter((field) => body[field] === undefined || body[field] === "");
 }
@@ -556,6 +590,16 @@ async function handleIntegration(req, res, pathname) {
   }
 
   const body = await readBody(req);
+
+  if (req.method === "POST" && pathname === "/api/integrations/errors") {
+    const missing = requireFields(body, ["source", "message"]);
+    if (missing.length) return sendJson(res, 400, { error: `Campos obrigatórios: ${missing.join(", ")}` });
+
+    const notification = recordIntegrationError(body);
+    emit("notifications", { notificationId: notification.id, type: "error" });
+    return sendJson(res, 201, notification);
+  }
+
   if (req.method === "POST" && pathname === "/api/integrations/messages") {
     const missing = requireFields(body, ["phone", "direction"]);
     if (missing.length) return sendJson(res, 400, { error: `Campos obrigatórios: ${missing.join(", ")}` });
@@ -686,10 +730,13 @@ async function handleApi(req, res, url) {
     return sendJson(res, authenticated ? 200 : 401, {
       authenticated,
       authRequired: Boolean(process.env.DASHBOARD_PASSWORD),
+      csrfToken: authenticated ? csrfToken(req) : undefined,
     });
   }
 
   if (!validSession(req)) return sendJson(res, 401, { error: "Não autenticado" });
+
+  if (!validCsrf(req)) return sendJson(res, 403, { error: "Token de seguranca invalido" });
 
   if (req.method === "GET" && pathname === "/api/events") {
     res.writeHead(200, securityHeaders({
@@ -706,6 +753,7 @@ async function handleApi(req, res, url) {
   if (req.method === "GET" && pathname === "/api/summary") {
     return sendJson(res, 200, {
       human: db.prepare("SELECT COUNT(*) total FROM conversations WHERE control_mode = 'human'").get().total,
+      humanUnread: db.prepare("SELECT COUNT(*) total FROM conversations WHERE control_mode = 'human' AND unread_count > 0").get().total,
       unread: db.prepare("SELECT COALESCE(SUM(unread_count), 0) total FROM conversations").get().total,
       pendingAppointments: db.prepare("SELECT COUNT(*) total FROM appointments WHERE status = 'pending'").get().total,
       notifications: db.prepare("SELECT COUNT(*) total FROM notifications WHERE read_at IS NULL").get().total,
@@ -847,7 +895,8 @@ function configProblems() {
   const required = ["DASHBOARD_PASSWORD", "SESSION_SECRET", "INTEGRATION_KEY"];
   return required.filter((name) => {
     const value = String(process.env[name] || "").trim();
-    return !value || placeholderSecrets.has(value.toLowerCase());
+    const normalized = value.toLowerCase();
+    return !value || placeholderSecrets.has(normalized) || normalized.startsWith("troque-por-");
   });
 }
 
@@ -876,8 +925,13 @@ function assertProductionConfig() {
 
 const server = http.createServer(async (req, res) => {
   const rawPathname = String(req.url || "/").split("?")[0] || "/";
-  const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+  let url;
   try {
+    try {
+      url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+    } catch {
+      throw httpError(400, "Requisicao invalida");
+    }
     if (url.pathname.startsWith("/api/")) return await handleApi(req, res, url);
     if (rawPathname.startsWith("/media/")) return serveMedia(req, res, rawPathname);
     if (req.method !== "GET") return sendJson(res, 405, { error: "Método não permitido" });
@@ -887,7 +941,25 @@ const server = http.createServer(async (req, res) => {
     }
   } catch (error) {
     const statusCode = Number(error.statusCode) || 500;
-    if (statusCode >= 500) console.error(error);
+    if (statusCode >= 500) {
+      console.error(error);
+      if (url?.pathname !== "/api/integrations/errors") {
+        try {
+          const notification = recordIntegrationError({
+            source: "central",
+            workflow: "Central de Controle",
+            node: `${req.method} ${url?.pathname || rawPathname}`,
+            message: error.message || "Erro interno",
+            stack: isProduction ? "" : error.stack,
+            occurredAt: now(),
+          });
+          emit("notifications", { notificationId: notification.id, type: "error" });
+        } catch (notifyError) {
+          console.warn("[alerta] Falha ao registrar erro na Central:", notifyError.message);
+        }
+        void notifyAdminAboutServerError(error, req);
+      }
+    }
     if (!res.headersSent) {
       sendJson(res, statusCode, {
         error: statusCode >= 500 && isProduction

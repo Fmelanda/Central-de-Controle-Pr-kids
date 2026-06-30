@@ -60,14 +60,13 @@
         </header>
 
         <section id="conversations-view" class="view">
-          <div class="stats" id="stats"></div>
           <div class="inbox">
             <aside class="conversation-panel">
               <div class="panel-tools">
                 <div class="search"><span>⌕</span><input id="search" placeholder="Buscar paciente ou telefone"></div>
                 <div class="filters">
                   <button class="filter active" data-mode="">Todas</button>
-                  <button class="filter" data-mode="human">Humano</button>
+                  <button class="filter" data-mode="human">Humano <b id="human-unread" class="filter-count">0</b></button>
                   <button class="filter" data-mode="ai">IA</button>
                 </div>
               </div>

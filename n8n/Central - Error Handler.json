@@ -1,0 +1,121 @@
+{
+  "name": "Central - Error Handler",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        0
+      ],
+      "id": "6f3d9f0c-4bcb-4557-8cf4-896dcf5e3bf9",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const execution = $json.execution || {};\nconst workflow = $json.workflow || {};\nconst error = execution.error || $json.error || {};\nconst occurredAt = new Date().toISOString();\nconst displayAt = new Date().toLocaleString('pt-BR', {\n  timeZone: 'America/Sao_Paulo',\n  year: 'numeric',\n  month: '2-digit',\n  day: '2-digit',\n  hour: '2-digit',\n  minute: '2-digit',\n  second: '2-digit',\n});\nconst workflowName = workflow.name || $json.workflowName || 'Workflow desconhecido';\nconst node = execution.lastNodeExecuted || error.node?.name || error.node || 'Nó não informado';\nconst message = error.message || error.description || $json.message || 'Erro sem descrição';\nconst stack = String(error.stack || error.context || '').slice(0, 1200);\nconst executionUrl = execution.url || execution.resumeUrl || '';\nconst centralPayload = {\n  source: 'n8n',\n  workflow: workflowName,\n  node,\n  message,\n  stack,\n  executionUrl,\n  occurredAt,\n};\nconst whatsappMessage = [\n  '🚨 Erro no n8n',\n  '',\n  `Data/hora: ${displayAt}`,\n  `Workflow: ${workflowName}`,\n  `Nó: ${node}`,\n  `Erro: ${message}`,\n  executionUrl ? `Execução: ${executionUrl}` : '',\n  stack ? `Log: ${stack.slice(0, 900)}` : '',\n].filter(Boolean).join('\\n');\n\nreturn {\n  json: {\n    ...centralPayload,\n    whatsappMessage,\n    centralPayload,\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "d5308a5c-69e4-40d9-87f8-74f34e294ce3",
+      "name": "Preparar alerta"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $env.ERROR_ALERT_INSTANCE || $env.EVOLUTION_DEFAULT_INSTANCE }}",
+        "remoteJid": "13467926991@s.whatsapp.net",
+        "messageText": "={{ $json.whatsappMessage }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -96
+      ],
+      "id": "78655e18-9cda-49da-932e-c12178e6f91c",
+      "name": "Enviar alerta WhatsApp",
+      "credentials": {
+        "evolutionApi": {
+          "id": "F9TWPbCpohtihy6Y",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ($env.CENTRAL_URL || 'http://central_controle:3000').replace(/\\/$/, '') + '/api/integrations/errors' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-integration-key",
+              "value": "={{ $env.CENTRAL_INTEGRATION_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json.centralPayload) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -80,
+        112
+      ],
+      "id": "15f6d4d4-208b-4029-950f-6c7cb1427394",
+      "name": "Central - Registrar erro"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Preparar alerta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar alerta": {
+      "main": [
+        [
+          {
+            "node": "Enviar alerta WhatsApp",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Central - Registrar erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4f7cb8d3-4c09-4204-bbfc-9377649109bb",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "CentralErrorHandler",
+  "tags": []
+}
